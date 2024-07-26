@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/otp_bloc.dart';
 import '../bloc/otp_event.dart';
 import '../bloc/otp_state.dart';
-import '../../../home/pages/home_page.dart';  // Make sure this path is correct
+import '../../../home/pages/home_page.dart';
 
 class OtpVerificationPage extends StatelessWidget {
   final String phoneNumber;
@@ -50,6 +50,7 @@ class OtpVerificationPage extends StatelessWidget {
                       border: OutlineInputBorder(),
                     ),
                     onChanged: (value) {
+                      context.read<OtpBloc>().add(OtpChanged(value));
                       if (value.isNotEmpty && index < 5) {
                         FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
                       } else if (value.isEmpty && index > 0) {
@@ -57,7 +58,6 @@ class OtpVerificationPage extends StatelessWidget {
                       }
                       if (index == 5 && value.isNotEmpty) {
                         FocusScope.of(context).unfocus();
-                        context.read<OtpBloc>().add(VerifyOtp(verificationId, _otpControllers.map((c) => c.text).join()));
                       }
                     },
                   ),
@@ -69,13 +69,18 @@ class OtpVerificationPage extends StatelessWidget {
               child: BlocConsumer<OtpBloc, OtpState>(
                 listener: (context, state) {
                   if (state is OtpVerified) {
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => HomePage()),
+                          (Route<dynamic> route) => false,
                     );
-                  } else if (state is OtpFailed) {
+                  } else if (state is OtpVerificationFailed) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('OTP verification failed: ${state.error}')),
+                    );
+                  } else if (state is OtpResent) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('OTP resent successfully')),
                     );
                   }
                 },
@@ -88,7 +93,8 @@ class OtpVerificationPage extends StatelessWidget {
                       backgroundColor: Colors.deepOrange,
                     ),
                     onPressed: () {
-                      context.read<OtpBloc>().add(VerifyOtp(verificationId, _otpControllers.map((c) => c.text).join()));
+                      String otp = _otpControllers.map((controller) => controller.text).join();
+                      context.read<OtpBloc>().add(VerifyOtp(verificationId, otp));
                     },
                     child: Text('Verify OTP', style: TextStyle(color: Colors.white)),
                   );
@@ -98,7 +104,7 @@ class OtpVerificationPage extends StatelessWidget {
             SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                context.read<OtpBloc>().add(ResendOtp());
+                context.read<OtpBloc>().add(ResendOtp(phoneNumber));
               },
               child: Text(
                 "Didn't receive code? Resend",

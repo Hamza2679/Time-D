@@ -1,4 +1,3 @@
-// otp_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'otp_event.dart';
@@ -8,6 +7,10 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   OtpBloc() : super(OtpInitial()) {
+    on<OtpChanged>((event, emit) {
+      // Handle OTP change logic if needed
+    });
+
     on<VerifyOtp>((event, emit) async {
       emit(OtpVerifying());
       try {
@@ -18,12 +21,29 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
         await _firebaseAuth.signInWithCredential(credential);
         emit(OtpVerified());
       } catch (e) {
-        emit(OtpFailed(e.toString()));
+        emit(OtpVerificationFailed(e.toString()));
       }
     });
 
     on<ResendOtp>((event, emit) async {
-      // Handle resending OTP logic here
+      try {
+        await _firebaseAuth.verifyPhoneNumber(
+          phoneNumber: event.phoneNumber,
+          verificationCompleted: (PhoneAuthCredential credential) async {
+            await _firebaseAuth.signInWithCredential(credential);
+            emit(OtpVerified());
+          },
+          verificationFailed: (FirebaseAuthException e) {
+            emit(OtpVerificationFailed(e.message ?? 'Unknown error'));
+          },
+          codeSent: (String verificationId, int? resendToken) {
+            emit(OtpResent(verificationId));
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {},
+        );
+      } catch (e) {
+        emit(OtpVerificationFailed(e.toString()));
+      }
     });
   }
 }

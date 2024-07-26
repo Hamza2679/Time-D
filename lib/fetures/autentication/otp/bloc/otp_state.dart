@@ -1,4 +1,3 @@
-// otp_state.dart
 import 'package:equatable/equatable.dart';
 
 abstract class OtpState extends Equatable {
@@ -14,11 +13,20 @@ class OtpVerifying extends OtpState {}
 
 class OtpVerified extends OtpState {}
 
-class OtpFailed extends OtpState {
+class OtpVerificationFailed extends OtpState {
   final String error;
 
-  const OtpFailed(this.error);
+  const OtpVerificationFailed(this.error);
 
   @override
   List<Object> get props => [error];
+}
+
+class OtpResent extends OtpState {
+  final String verificationId;
+
+  const OtpResent(this.verificationId);
+
+  @override
+  List<Object> get props => [verificationId];
 }

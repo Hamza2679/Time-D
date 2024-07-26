@@ -1,4 +1,3 @@
-// otp_event.dart
 import 'package:equatable/equatable.dart';
 
 abstract class OtpEvent extends Equatable {
@@ -27,4 +26,11 @@ class VerifyOtp extends OtpEvent {
   List<Object> get props => [verificationId, otp];
 }
 
-class ResendOtp extends OtpEvent {}
+class ResendOtp extends OtpEvent {
+  final String phoneNumber;
+
+  const ResendOtp(this.phoneNumber);
+
+  @override
+  List<Object> get props => [phoneNumber];
+}
