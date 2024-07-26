@@ -34,7 +34,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           },
           codeSent: (String verificationId, int? resendToken) {
             // Navigate to the OTP page
-            Navigator.push(
+            Navigator.pushReplacement(
               event.context, // Pass context through event
               MaterialPageRoute(
                 builder: (context) => OtpVerificationPage(

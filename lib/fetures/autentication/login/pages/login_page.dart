@@ -106,7 +106,7 @@ class LoginPage extends StatelessWidget {
                         backgroundColor: Colors.deepOrange,
                       ),
                       onPressed: () {
-                        context.read<LoginBloc>().add(SubmitPhoneNumber(context)); // Pass context here
+                        context.read<LoginBloc>().add(SubmitPhoneNumber(context));
                       },
                       child: Text('Submit', style: TextStyle(color: Colors.white)),
                     );
