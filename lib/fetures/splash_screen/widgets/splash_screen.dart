@@ -18,6 +18,13 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(5.0),
+        child: AppBar(
+          backgroundColor: Colors.deepOrange,
+          // title: Text('Hello Delivery',style: TextStyle(fontSize: 5),),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.deepOrange, width: 5),
@@ -47,15 +54,15 @@ class SplashScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20,),
-              ElevatedButton(
-                onPressed: onSkip,
-                child: Text('Skip' ,style: TextStyle(color: Colors.white),),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepOrange,
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                  minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 40),
-                ),
-              ),
+              // ElevatedButton(
+              //   onPressed: onSkip,
+              //   child: Text('Skip' ,style: TextStyle(color: Colors.white),),
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.deepOrange,
+              //     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+              //     minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 40),
+              //   ),
+              // ),
               SizedBox(height: 20), // Add some space at the bottom
             ],
           ),

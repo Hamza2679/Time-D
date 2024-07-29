@@ -1,3 +1,4 @@
+import 'package:delivery_app/fetures/home/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,7 +72,7 @@ class OtpVerificationPage extends StatelessWidget {
                   if (state is OtpVerified) {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
+                      MaterialPageRoute(builder: (context) => MainPage()),
                           (Route<dynamic> route) => false,
                     );
                   } else if (state is OtpVerificationFailed) {

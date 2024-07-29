@@ -43,8 +43,11 @@ class HomePage extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Hello Delivery'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(5.0),
+        child: AppBar(
+         // title: Text('Hello Delivery',style: TextStyle(fontSize: 5),),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../home/pages/main_page.dart';
+import '../../otp/pages/otp_page.dart';
 import '../bloc/login_bloc.dart';
-import '../bloc/login_event.dart';
-import '../bloc/login_state.dart';
 
 class LoginPage extends StatelessWidget {
   final List<String> _countryCodes = ['+1', '+91', '+44', '+61', '+81', '+49', '+251'];
@@ -17,9 +19,9 @@ class LoginPage extends StatelessWidget {
         backgroundColor: Colors.deepOrange,
         title: Text('Login', style: TextStyle(color: Colors.white)),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(height: 50),
@@ -55,7 +57,6 @@ class LoginPage extends StatelessWidget {
                         );
                       }).toList(),
                       onChanged: (newValue) {
-                        context.read<LoginBloc>().add(CountryCodeChanged(newValue!));
                         _selectedCountryCode = newValue;
                       },
                       decoration: InputDecoration(
@@ -71,9 +72,6 @@ class LoginPage extends StatelessWidget {
                     child: TextField(
                       controller: _phoneNumberController,
                       keyboardType: TextInputType.phone,
-                      onChanged: (value) {
-                        context.read<LoginBloc>().add(PhoneNumberChanged(value));
-                      },
                       decoration: InputDecoration(
                         labelText: 'Phone Number',
                         border: InputBorder.none,
@@ -86,31 +84,14 @@ class LoginPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               Center(
-                child: BlocConsumer<LoginBloc, LoginState>(
-                  listener: (context, state) {
-                    if (state is LoginFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to verify phone number: ${state.error}')),
-                      );
-                    }
-                    if (state is LoginSuccess) {
-                      // Handle success navigation or logic here
-                    }
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepOrange,
+                  ),
+                  onPressed: () {
+                    _verifyPhoneNumber(context);
                   },
-                  builder: (context, state) {
-                    if (state is LoginLoading) {
-                      return CircularProgressIndicator();
-                    }
-                    return ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange,
-                      ),
-                      onPressed: () {
-                        context.read<LoginBloc>().add(SubmitPhoneNumber(context));
-                      },
-                      child: Text('Submit', style: TextStyle(color: Colors.white)),
-                    );
-                  },
+                  child: Text('Submit', style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
@@ -118,5 +99,37 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _verifyPhoneNumber(BuildContext context) async {
+    String phoneNumber = '$_selectedCountryCode${_phoneNumberController.text.trim()}';
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        // Handle automatic sign-in
+        _setLoginState();
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        // Handle failure
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to verify phone number: ${e.message}')));
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OtpVerificationPage(verificationId: verificationId, phoneNumber: phoneNumber),
+          ),
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
+  void _setLoginState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', true);
   }
 }

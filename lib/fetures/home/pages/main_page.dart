@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import '../../order/order_view.dart';
-import '../../profile/profile_view.dart';
+import '../../profile/profile_view.dart'; // Import ProfileView
 
-// This is the main page that contains the bottom navigation bar and handles navigation between different views.
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 0; // Keeps track of the currently selected tab index
+  int _selectedIndex = 0;
 
-  // List of widgets for each tab. Each widget corresponds to a different page.
   static List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     OrderView(),
-    ProfileView(),
+    ProfileView(), // Add ProfileView
   ];
 
-  // Handles the logic for when a tab is tapped. Updates the selected index and refreshes the UI.
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -29,25 +26,32 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex), // Displays the selected page
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(5.0),
+        child: AppBar(
+          backgroundColor: Colors.deepOrange,
+          // title: Text('Hello Delivery',style: TextStyle(fontSize: 5),),
+        ),
+      ),
+      body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home), // Icon for Home tab
+            icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt), // Icon for Orders tab
+            icon: Icon(Icons.receipt),
             label: 'Orders',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person), // Icon for Profile tab
+            icon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
-        currentIndex: _selectedIndex, // The currently selected tab
-        selectedItemColor: Colors.deepOrange, // Color of the selected tab icon
-        onTap: _onItemTapped, // Callback for when a tab is tapped
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.deepOrange,
+        onTap: _onItemTapped,
       ),
     );
   }

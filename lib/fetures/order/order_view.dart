@@ -5,8 +5,11 @@ class OrderView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Your Orders'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(5.0),
+        child: AppBar(
+          // title: Text('Hello Delivery',style: TextStyle(fontSize: 5),),
+        ),
       ),
       body: Center(
         child: Text(

@@ -7,8 +7,8 @@ class SplashScreen2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SplashScreen(
-      imagePath: 'assets/splash2.png', // Replace with your image path
-      text: 'Easily find your favorite products.',
+      imagePath: 'assets/splash1.jpg', // Replace with your image path
+      text: 'Easily find your favorite products. Order from any restaurant ',
       onNext: () {
         Navigator.push(
           context,

@@ -6,7 +6,7 @@ class SplashScreen3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SplashScreen(
-      imagePath: 'assets/splash3.png', // Replace with your image path
+      imagePath: 'assets/splash2.png', // Replace with your image path
       text: 'Get fast and reliable delivery at your doorstep.',
       onNext: () {
         Navigator.pushAndRemoveUntil(
