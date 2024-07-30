@@ -13,8 +13,10 @@ void main() async {
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  print("Is Logged In in main: $isLoggedIn"); // Debug print
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
+
 
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;

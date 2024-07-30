@@ -1,8 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // If using Firebase Authentication
 import 'package:shared_preferences/shared_preferences.dart';
 import '../autentication/login/pages/login_page.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
+  @override
+  _ProfileViewState createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  String? _phoneNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPhoneNumber();
+  }
+
+  Future<void> _fetchPhoneNumber() async {
+    // Assuming Firebase Authentication is being used.
+    User? user = FirebaseAuth.instance.currentUser;
+    setState(() {
+      _phoneNumber = user?.phoneNumber ?? 'No phone number';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,9 +46,17 @@ class ProfileView extends StatelessWidget {
               'Katty Berry',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            Text(
-              'kattyberry@gmail.com',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+            SizedBox(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.phone, color: Colors.orange),
+                SizedBox(width: 5),
+                Text(
+                  _phoneNumber ?? 'No phone number',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ],
             ),
             SizedBox(height: 30),
             Expanded(
@@ -70,7 +100,7 @@ class ProfileView extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', false);
+    await prefs.setBool('isLoggedIn', false);
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),

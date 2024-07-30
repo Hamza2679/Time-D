@@ -7,9 +7,18 @@ import '../../otp/pages/otp_page.dart';
 import '../bloc/login_bloc.dart';
 
 class LoginPage extends StatelessWidget {
-  final List<String> _countryCodes = ['+1', '+91', '+44', '+61', '+81', '+49', '+251'];
+  final List<String> _countryCodes = [
+    '+1',
+    '+91',
+    '+44',
+    '+61',
+    '+81',
+    '+49',
+    '+251'
+  ];
   final TextEditingController _phoneNumberController = TextEditingController();
   String? _selectedCountryCode = '+251';
+
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +117,10 @@ class LoginPage extends StatelessWidget {
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) async {
         await FirebaseAuth.instance.signInWithCredential(credential);
-        // Handle automatic sign-in
         _setLoginState();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
       },
       verificationFailed: (FirebaseAuthException e) {
-        // Handle failure
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to verify phone number: ${e.message}')));
       },
       codeSent: (String verificationId, int? resendToken) {
@@ -130,6 +137,8 @@ class LoginPage extends StatelessWidget {
 
   void _setLoginState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', true);
+    await prefs.setBool('isLoggedIn', true); // Ensure this is awaited
+    print("Login state set: ${prefs.getBool('isLoggedIn')}"); // Debug print
   }
+
 }
