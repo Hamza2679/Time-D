@@ -24,6 +24,18 @@ class _HomePageState extends State<HomePage> {
       "menu": [
         {"image": "assets/pizza.jpg", "name": "Margherita Pizza", "price": "\$8.99"},
         {"image": "assets/pizza.jpg", "name": "Pepperoni Pizza", "price": "\$9.99"},
+        {"image": "assets/burger.jpg", "name": "Cheeseburger", "price": "\$5.99"},
+        {"image": "assets/burger.jpg", "name": "Double Burger", "price": "\$7.99"},
+        {"image": "assets/sushi.jpg", "name": "California Roll", "price": "\$6.99"},
+        {"image": "assets/sushi.jpg", "name": "Spicy Tuna Roll", "price": "\$7.99"},
+        {"image": "assets/pizza.jpg", "name": "Margherita Pizza", "price": "\$8.99"},
+        {"image": "assets/pizza.jpg", "name": "Pepperoni Pizza", "price": "\$9.99"},
+        {"image": "assets/burger.jpg", "name": "Cheeseburger", "price": "\$5.99"},
+        {"image": "assets/burger.jpg", "name": "Double Burger", "price": "\$7.99"},
+        {"image": "assets/sushi.jpg", "name": "California Roll", "price": "\$6.99"},
+        {"image": "assets/sushi.jpg", "name": "Spicy Tuna Roll", "price": "\$7.99"},
+        {"image": "assets/taco.jpg", "name": "Chicken Taco", "price": "\$2.99"},
+        {"image": "assets/taco.jpg", "name": "Beef Taco", "price": "\$3.99"},
       ],
     },
     {

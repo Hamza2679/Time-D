@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: isLoggedIn ? MainPage() : SplashScreen1(),
+       //  home:LoginPage()
       ),
     );
   }

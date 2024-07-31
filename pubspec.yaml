@@ -44,6 +44,7 @@ dependencies:
   firebase_auth: ^5.1.2
   provider: ^6.1.2
   shared_preferences: ^2.0.7
+  country_picker: ^2.0.26
 
 
 dev_dependencies:

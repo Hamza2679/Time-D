@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../home/pages/main_page.dart';
 import '../../otp/pages/otp_page.dart';
-import '../bloc/login_bloc.dart';
 
-class LoginPage extends StatelessWidget {
-  final List<String> _countryCodes = [
-    '+1',
-    '+91',
-    '+44',
-    '+61',
-    '+81',
-    '+49',
-    '+251'
-  ];
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneNumberController = TextEditingController();
-  String? _selectedCountryCode = '+251';
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  String _selectedCountryCode = '+251';
+  String _countryFlag = '🇪🇹'; // Default to Ethiopia's flag
 
   @override
   Widget build(BuildContext context) {
@@ -31,80 +29,101 @@ class LoginPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 50),
-              Text(
-                'Hello Delivery',
-                style: TextStyle(
-                  color: Colors.deepOrange,
-                  fontSize: 80,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                Text(
+                  'Hello Delivery',
+                  style: TextStyle(
+                    color: Colors.deepOrange,
+                    fontSize: 80,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
-              ),
-              SizedBox(height: 50),
-              Text(
-                'Enter your phone number to login',
-                style: TextStyle(
-                  color: Colors.deepOrange,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                SizedBox(height: 50),
+                Text(
+                  'Enter your phone number to login',
+                  style: TextStyle(
+                    color: Colors.deepOrange,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedCountryCode,
-                      items: _countryCodes.map((String code) {
-                        return DropdownMenuItem<String>(
-                          value: code,
-                          child: Text(code),
+                SizedBox(height: 20),
+
+                TextFormField(
+                  controller: _phoneNumberController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    hintText: 'Enter Phone Number',
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide.none,
+                    ),
+                    prefixIcon: GestureDetector(
+                      onTap: () {
+                        showCountryPicker(
+                          context: context,
+                          showPhoneCode: true,
+                          onSelect: (Country country) {
+                            setState(() {
+                              _selectedCountryCode = '+${country.phoneCode}';
+                              _countryFlag = country.flagEmoji;
+                            });
+                          },
                         );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        _selectedCountryCode = newValue;
                       },
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        filled: true,
-                        fillColor: Colors.grey[200],
+                      child: Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('$_countryFlag $_selectedCountryCode'),
+                            Icon(Icons.arrow_drop_down, color: Colors.grey),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    flex: 3,
-                    child: TextField(
-                      controller: _phoneNumberController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Phone Number',
-                        border: InputBorder.none,
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your phone number';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
                   ),
                   onPressed: () {
-                    _verifyPhoneNumber(context);
+                    if (_formKey.currentState!.validate()) {
+                      _verifyPhoneNumber(context);
+                    }
                   },
                   child: Text('Submit', style: TextStyle(color: Colors.white)),
                 ),
-              ),
-            ],
+                SizedBox(height: 30,),
+                Text(
+                  'If youre experiencing issues logging in, please don`t hesitate to call us at 6544.',
+                  style: TextStyle(
+
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ],
+
+            ),
           ),
+
         ),
       ),
     );
@@ -124,7 +143,7 @@ class LoginPage extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to verify phone number: ${e.message}')));
       },
       codeSent: (String verificationId, int? resendToken) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => OtpVerificationPage(verificationId: verificationId, phoneNumber: phoneNumber),
@@ -137,8 +156,7 @@ class LoginPage extends StatelessWidget {
 
   void _setLoginState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true); // Ensure this is awaited
-    print("Login state set: ${prefs.getBool('isLoggedIn')}"); // Debug print
+    await prefs.setBool('isLoggedIn', true);
+    print("Login state set: ${prefs.getBool('isLoggedIn')}");
   }
-
 }
