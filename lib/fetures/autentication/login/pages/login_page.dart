@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'dart:convert';
+import '../../../../authentication_repository.dart';
 import '../../../home/pages/main_page.dart';
 import '../../otp/pages/otp_page.dart';
 
@@ -16,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _selectedCountryCode = '+251';
-  String _countryFlag = '🇪🇹'; // Default to Ethiopia's flag
+  String _countryFlag = '🇪🇹';
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-
                 TextFormField(
                   controller: _phoneNumberController,
                   keyboardType: TextInputType.phone,
@@ -109,21 +110,18 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: Text('Submit', style: TextStyle(color: Colors.white)),
                 ),
-                SizedBox(height: 30,),
+                SizedBox(height: 30),
                 Text(
-                  'If youre experiencing issues logging in, please don`t hesitate to call us at 6544.',
+                  'If you\'re experiencing issues logging in, please don\'t hesitate to call us at 6544.',
                   style: TextStyle(
-
                     color: Colors.black,
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
                   ),
                 ),
               ],
-
             ),
           ),
-
         ),
       ),
     );
@@ -137,26 +135,30 @@ class _LoginPageState extends State<LoginPage> {
       verificationCompleted: (PhoneAuthCredential credential) async {
         await FirebaseAuth.instance.signInWithCredential(credential);
         _setLoginState();
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+        Get.offAll(() => MainPage());
       },
       verificationFailed: (FirebaseAuthException e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to verify phone number: ${e.message}')));
       },
       codeSent: (String verificationId, int? resendToken) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OtpVerificationPage(verificationId: verificationId, phoneNumber: phoneNumber),
-          ),
-        );
+        Get.offAll(() => OtpVerificationPage(verificationId: verificationId, phoneNumber: phoneNumber));
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
   }
 
   void _setLoginState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
-    print("Login state set: ${prefs.getBool('isLoggedIn')}");
+    String token = _generateToken();
+    await AuthenticationRepository.instance.saveToken(token);
+    print('Token saved: $token');
+  }
+
+  String _generateToken() {
+    final payload = {
+      'iss': 'delivery_app',
+      'exp': DateTime.now().add(Duration(days: 180)).millisecondsSinceEpoch ~/ 1000
+    };
+    final token = base64UrlEncode(utf8.encode(jsonEncode(payload)));
+    return token;
   }
 }

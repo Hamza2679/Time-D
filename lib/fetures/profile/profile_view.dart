@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // If using Firebase Authentication
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+import '../../../authentication_repository.dart';
 import '../autentication/login/pages/login_page.dart';
 
 class ProfileView extends StatefulWidget {
@@ -18,7 +19,6 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Future<void> _fetchPhoneNumber() async {
-    // Assuming Firebase Authentication is being used.
     User? user = FirebaseAuth.instance.currentUser;
     setState(() {
       _phoneNumber = user?.phoneNumber ?? 'No phone number';
@@ -28,9 +28,11 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(5.0),
+        child: AppBar(
+          // title: Text('Hello Delivery',style: TextStyle(fontSize: 5),),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,7 +40,7 @@ class _ProfileViewState extends State<ProfileView> {
           children: [
             CircleAvatar(
               radius: 40,
-              backgroundImage: AssetImage('assets/profile_picture.png'), // Update with actual profile image path
+              backgroundImage: AssetImage('assets/profile_picture.png'),
               backgroundColor: Colors.orange,
             ),
             SizedBox(height: 10),
@@ -75,7 +77,8 @@ class _ProfileViewState extends State<ProfileView> {
             SizedBox(height: 20),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.orange, backgroundColor: Colors.white,
+                foregroundColor: Colors.orange,
+                backgroundColor: Colors.white,
                 side: BorderSide(color: Colors.orange),
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
@@ -88,23 +91,14 @@ class _ProfileViewState extends State<ProfileView> {
                 style: TextStyle(color: Colors.orange),
               ),
               onPressed: () async {
-                await _logout(context);
+                await AuthenticationRepository.instance.logout();
+                Get.offAll(() => LoginPage());
               },
             ),
             SizedBox(height: 20),
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', false);
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-          (Route<dynamic> route) => false,
     );
   }
 }
