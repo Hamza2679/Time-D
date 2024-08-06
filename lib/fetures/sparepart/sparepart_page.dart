@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
-import '../../order/order_view.dart';
-import '../../profile/profile_view.dart'; // Import ProfileView
+import '../order/order_view.dart';
+import '../profile/profile_view.dart';
 
-class MainPage extends StatefulWidget {
+class SparePartPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  _SparePartPage createState() => _SparePartPage();
 }
 
-class _MainPageState extends State<MainPage> {
+class _SparePartPage extends State<SparePartPage> {
   int _selectedIndex = 0;
 
   static List<Widget> _widgetOptions = <Widget>[

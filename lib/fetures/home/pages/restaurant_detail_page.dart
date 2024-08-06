@@ -79,8 +79,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.name),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: AppBar(
+          backgroundColor: Colors.deepOrange,
+          title: Text(widget.name, style: TextStyle(color: Colors.white)),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -124,18 +128,25 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               ),
             ),
             SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Total: \$$_totalPrice",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                ElevatedButton(
-                  onPressed: _buyNow,
-                  child: Text("Buy Now"),
-                ),
-              ],
+            Container(
+              color: Colors.deepOrange,
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Total: \$$_totalPrice",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.deepOrange, backgroundColor: Colors.white, // Text color
+                    ),
+                    onPressed: _buyNow,
+                    child: Text("Buy Now"),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

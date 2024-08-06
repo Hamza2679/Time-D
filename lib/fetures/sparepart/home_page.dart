@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../common/common.dart';
-import 'restaurant_detail_page.dart';
-import '../../common/data.dart';
+import '../common/common.dart';
+import '../home/pages/restaurant_detail_page.dart';
+import '../common/data.dart';
 
 class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePage createState() => _HomePage();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePage extends State<HomePage> {
   String _searchQuery = '';
 
   List<Map<String, dynamic>> _filteredRestaurants() {
@@ -57,16 +57,7 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 8),
               buildCategories(context, categories),
-              SizedBox(height: 16),
-              Text(
-                'Restaurants',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 8),
-              buildRestaurants(context, _filteredRestaurants()),
+
             ],
           ),
         ),

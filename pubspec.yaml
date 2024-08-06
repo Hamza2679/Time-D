@@ -97,6 +97,13 @@ flutter:
     - assets/special.jpg
     - assets/strobery.jpg
     - assets/sushi.jpg
+    - assets/electronics.png
+    - assets/food.jpg
+    - assets/gift.jpg
+    - assets/pharmacy.jpg
+    - assets/sparepart.jpg
+    - assets/stationary.jpg
+    - assets/books.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
