@@ -48,32 +48,32 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
           onTap: () {
             // Navigate based on the category
             if (category["text"] == "Food") {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => MainPage()),
               );
             } else if (category["text"] == "Electronics") {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => ElectronicsPage()),
               );
             } else if (category["text"] == "Pharmacy") {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => PharmacyPage()),
               );
             } else if (category["text"] == "Spare part") {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => SparePartPage()),
               );
             } else if (category["text"] == "Gifts") {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => GiftPage()),
               );
             } else if (category["text"] == "Books and Stationery") {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => BooksPage()),
               );
