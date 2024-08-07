@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../common/common.dart';
-import '../home/pages/restaurant_detail_page.dart';
+import 'restaurant_detail_page.dart';
 import '../common/data.dart';
 
-class HomePage extends StatefulWidget {
+class FoodPage extends StatefulWidget {
   @override
-  _HomePage createState() => _HomePage();
+  _FoodPage createState() => _FoodPage();
 }
 
-class _HomePage extends State<HomePage> {
+class _FoodPage extends State<FoodPage> {
   String _searchQuery = '';
 
   List<Map<String, dynamic>> _filteredRestaurants() {
@@ -27,46 +27,28 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: PreferredSize(
-      preferredSize: Size.fromHeight(5.0),
-      child: AppBar(
-        // title: Text('Hello Delivery',style: TextStyle(fontSize: 5),),
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(5.0),
+        child: AppBar(
+          //backgroundColor: Colors.deepOrange,
+        ),
       ),
-    ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildSearchBar(
-                height: 40,
-                onChanged: (query) {
-                  setState(() {
-                    _searchQuery = query;
-                  });
-                },
-              ),
-              SizedBox(height: 16),
               Text(
-                'Categories',
+                'Restaurants',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              buildCategories(context, categories),
-              SizedBox(height: 16),
-              Text(
-                'Pharmacies',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 8),
-
+              SizedBox(height: 4),
+              buildRestaurants(context, _filteredRestaurants()),
             ],
           ),
         ),

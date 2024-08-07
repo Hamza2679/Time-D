@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/otp_bloc.dart';
 import '../bloc/otp_event.dart';
 import '../bloc/otp_state.dart';
-import '../../../home/pages/home_page.dart';
 
 class OtpVerificationPage extends StatelessWidget {
   final String phoneNumber;

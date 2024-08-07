@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../common/finish_page.dart';
+
 class RestaurantDetailPage extends StatefulWidget {
   final String name;
   final String image;
@@ -62,12 +64,21 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Order Summary"),
-          content: Text("Total Price: \$$_totalPrice"),
+          content: Text("Total Price: \$${_totalPrice.toStringAsFixed(2)}"),
           actions: <Widget>[
             TextButton(
               child: Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                setState(() {
+                  for (int i = 0; i < widget.menu.length; i++) {
+                    quantities[i] = 0;
+                  }
+                  _updateTotalPrice();
+                });
+                Navigator.pushAndRemoveUntil( context,
+                  MaterialPageRoute(builder: (context) => FinishPage()),
+                      (Route<dynamic> route) => false,);
+
               },
             ),
           ],
@@ -135,7 +146,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Total: \$$_totalPrice",
+                    "Total: \$${_totalPrice.toStringAsFixed(2)}",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   ElevatedButton(

@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import '../books/books_page.dart';
-import '../electronics/electronics_page.dart';
-import '../gift/gift_page.dart';
-import '../home/pages/main_page.dart';
-import '../home/pages/restaurant_detail_page.dart';
-import '../pharmacy/pharmacy_page.dart';
-import '../sparepart/sparepart_page.dart';
+import '../food/restaurant_detail_page.dart';
+
 
 Widget buildHeader(String text) {
   return Text(
@@ -35,70 +30,6 @@ Widget buildSearchBar({double height = 56.0, required ValueChanged<String> onCha
 }
 
 
-
-Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categories) {
-  return Container(
-    height: 160,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final category = categories[index];
-        return GestureDetector(
-          onTap: () {
-            // Navigate based on the category
-            if (category["text"] == "Food") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MainPage()),
-              );
-            } else if (category["text"] == "Electronics") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => ElectronicsPage()),
-              );
-            } else if (category["text"] == "Pharmacy") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => PharmacyPage()),
-              );
-            } else if (category["text"] == "Spare part") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => SparePartPage()),
-              );
-            } else if (category["text"] == "Gifts") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => GiftPage()),
-              );
-            } else if (category["text"] == "Books and Stationery") {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => BooksPage()),
-              );
-            }
-          },
-          child: Container(
-            margin: EdgeInsets.only(right: 16),
-            width: 100,
-            child: Column(
-              children: [
-                Image.asset(category["image"], height: 100, fit: BoxFit.cover),
-                SizedBox(height: 8),
-                Text(
-                  category["text"],
-                  style: TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    ),
-  );
-}
 Widget buildRestaurants(BuildContext context, List<Map<String, dynamic>> restaurants) {
   return GridView.builder(
     shrinkWrap: true,

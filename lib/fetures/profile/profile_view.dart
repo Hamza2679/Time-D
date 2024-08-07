@@ -40,12 +40,12 @@ class _ProfileViewState extends State<ProfileView> {
           children: [
             CircleAvatar(
               radius: 40,
-              backgroundImage: AssetImage('assets/profile_picture.png'),
+              backgroundImage: AssetImage('assets/profile_picture.jpg'),
               backgroundColor: Colors.orange,
             ),
             SizedBox(height: 10),
             Text(
-              'Katty Berry',
+              'update your name',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 5),
