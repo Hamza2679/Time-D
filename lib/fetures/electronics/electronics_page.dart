@@ -80,6 +80,24 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
         {"name": "Phone", "price": "500"}
       ]
     },
+    {
+      "name": "Best Buy",
+      "location": "123 Main St",
+      "items": [
+        {"name": "Tablet", "price": "300"},
+        {"name": "Smartwatch", "price": "200"},
+        {"name": "Tablet", "price": "300"},
+        {"name": "Smartwatch", "price": "200"},
+        {"name": "Tablet", "price": "300"},
+        {"name": "Smartwatch", "price": "200"},
+        {"name": "Laptop", "price": "1000"},
+        {"name": "Phone", "price": "500"},
+        {"name": "Laptop", "price": "1000"},
+        {"name": "Phone", "price": "500"},
+        {"name": "Laptop", "price": "1000"},
+        {"name": "Phone", "price": "500"}
+      ]
+    },
 
     {
       "name": "Tech Store",
