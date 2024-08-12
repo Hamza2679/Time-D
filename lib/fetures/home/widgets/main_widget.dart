@@ -25,7 +25,6 @@ Widget buildCategoryPage(String currentCategory) {
       return FoodPage();
   }
 }
-
 Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categories, String currentCategory) {
   return Container(
     height: 126,
@@ -46,17 +45,27 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 color: isSelected ? Colors.deepOrange : Colors.white,
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(20.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: Offset(0, 4),
+                    blurRadius: 6,
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    category['image'],
-                    width: 130,
-                    height: 80,
-                    fit: BoxFit.cover,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.asset(
+                      category['image'],
+                      width: 130,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   SizedBox(height: 8),
                   Text(

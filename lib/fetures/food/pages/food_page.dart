@@ -34,24 +34,39 @@ class _FoodPage extends State<FoodPage> {
           //backgroundColor: Colors.deepOrange,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Restaurants',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+      body: Column(
+        children: [
+          Container(
+            color: Colors.white54,
+            child: Padding(
+              padding: const EdgeInsets.all(6.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'Restaurants',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              SizedBox(height: 4),
-              buildRestaurants(context, _filteredRestaurants()),
-            ],
+            ),
           ),
-        ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 4),
+                    buildRestaurants(context, _filteredRestaurants()),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

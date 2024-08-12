@@ -53,14 +53,13 @@ class MainPage extends StatelessWidget {
                           IconButton(
                             icon: Icon(Icons.notifications),
                             onPressed: () {
-                              // Handle notification button tap here
                               print("Notification button tapped");
                             },
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 0),
                     Text(
                       'Categories',
                       style: TextStyle(
