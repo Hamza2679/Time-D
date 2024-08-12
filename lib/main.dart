@@ -1,4 +1,5 @@
 import 'package:delivery_app/fetures/autentication/otp/pages/otp_page.dart';
+import 'package:delivery_app/fetures/home/pages/main_page.dart';
 import 'package:delivery_app/fetures/splash_screen/pages/splash_screen1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'authentication_repository.dart';
 import 'fetures/autentication/login/bloc/login_bloc.dart';
 import 'fetures/autentication/otp/bloc/otp_bloc.dart';
+import 'fetures/home/bloc/home_bloc.dart';
 import 'fetures/splash_screen/bloc/splash_bloc.dart';
 
 void main() async {
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => LoginBloc()),
         BlocProvider(create: (context) => OtpBloc()),
         BlocProvider(create: (context) => SplashBloc()),
-
+        BlocProvider(create: (context) => MainBloc())  // Provide the MainBloc here
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,

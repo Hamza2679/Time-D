@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../common/finish_page.dart';
+import '../../common/finish_page.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String name;

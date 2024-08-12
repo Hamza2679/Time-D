@@ -1,7 +1,7 @@
+import 'package:delivery_app/fetures/food/widgets/food_widgets.dart';
 import 'package:flutter/material.dart';
-import '../common/common.dart';
-import 'restaurant_detail_page.dart';
-import '../common/data.dart';
+
+import '../../common/data.dart';
 
 class FoodPage extends StatefulWidget {
   @override
