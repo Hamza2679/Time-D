@@ -1,27 +1,42 @@
+// splash_screen3.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/splash_bloc.dart';
+import '../bloc/splash_event.dart';
+import '../bloc/splash_state.dart';
 import '../widgets/splash_screen.dart';
 import 'package:delivery_app/fetures/autentication/login/pages/login_page.dart';
 
 class SplashScreen3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SplashScreen(
-      imagePath: 'assets/splash2.png', // Replace with your image path
-      text: 'Get fast and reliable delivery at your doorstep.',
-      onNext: () {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-              (route) => false,
-        );
+    return BlocListener<SplashBloc, SplashState>(
+      listener: (context, state) {
+        if (state is SplashNavigate) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => state.nextScreen),
+          );
+        }
       },
-      onSkip: () {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-              (route) => false,
-        );
-      },
+      child: Scaffold(
+        body: SplashScreen(
+          imagePath: 'assets/splash2.png',
+          text: 'Get fast and reliable delivery at your doorstep.',
+          onNext: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
+          },
+          onSkip: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
+          },
+        ),
+      ),
     );
   }
 }

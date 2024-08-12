@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'authentication_repository.dart';
 import 'fetures/autentication/login/bloc/login_bloc.dart';
 import 'fetures/autentication/otp/bloc/otp_bloc.dart';
+import 'fetures/splash_screen/bloc/splash_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,8 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => LoginBloc()),
         BlocProvider(create: (context) => OtpBloc()),
+        BlocProvider(create: (context) => SplashBloc()),
+
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
