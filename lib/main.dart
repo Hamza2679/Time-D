@@ -1,4 +1,6 @@
 import 'package:delivery_app/fetures/autentication/otp/pages/otp_page.dart';
+import 'package:delivery_app/fetures/food/main/bloc/food_bloc.dart';
+import 'package:delivery_app/fetures/food/restaurant_detail/bloc/restaurant_detail_bloc.dart';
 import 'package:delivery_app/fetures/home/pages/main_page.dart';
 import 'package:delivery_app/fetures/splash_screen/pages/splash_screen1.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +28,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => LoginBloc()),
         BlocProvider(create: (context) => OtpBloc()),
         BlocProvider(create: (context) => SplashBloc()),
-        BlocProvider(create: (context) => MainBloc())  // Provide the MainBloc here
+        BlocProvider(create: (context) => MainBloc()),
+        BlocProvider(create: (context) => FoodBloc()),
+       // BlocProvider(create: (context) => RestaurantBloc(menu)),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,

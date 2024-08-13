@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../pages/restaurant_detail_page.dart';
+import '../restaurant_detail/page/restaurant_detail_page.dart';
 
 Widget buildRestaurants(BuildContext context, List<Map<String, dynamic>> restaurants) {
   return GridView.builder(
