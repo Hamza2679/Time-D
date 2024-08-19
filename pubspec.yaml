@@ -106,6 +106,22 @@ flutter:
     - assets/books.jpg
     - assets/sucsess.png
     - assets/Screenshot.png
+    - assets/camera.jpg
+    - assets/drone.jpg
+    - assets/eirbuds.jpg
+    - assets/Estore1.jpg
+    - assets/Estore2.jpg
+    - assets/Estore3.jpg
+    - assets/Estore4.jpg
+    - assets/Estore5.jpg
+    - assets/Estore6.jpg
+    - assets/headset.jpg
+    - assets/laptop.jpg
+    - assets/phone.jpg
+    - assets/smart_watch.jpg
+    - assets/speaker.jpg
+    - assets/tablet.jpg
+    - assets/tv.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

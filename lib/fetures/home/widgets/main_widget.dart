@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../books/books_page.dart';
-import '../../electronics/electronics_page.dart';
+import '../../electronics/main/pages/electronics_page.dart';
 import '../../food/main/pages/food_page.dart';
 import '../../gift/gift_page.dart';
 import '../../pharmacy/pharmacy_page.dart';
