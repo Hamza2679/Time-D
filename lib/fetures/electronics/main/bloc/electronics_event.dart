@@ -1,8 +1,10 @@
+// electronics_event.dart
+
 import 'package:equatable/equatable.dart';
 
 abstract class ElectronicsEvent extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadElectronics extends ElectronicsEvent {}

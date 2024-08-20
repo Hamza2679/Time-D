@@ -1,21 +1,21 @@
+// electronics_state.dart
+
 import 'package:equatable/equatable.dart';
 
 abstract class ElectronicsState extends Equatable {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class ElectronicsInitial extends ElectronicsState {}
 
-class ElectronicsLoading extends ElectronicsState {}
-
 class ElectronicsLoaded extends ElectronicsState {
-  final List<Map<String, dynamic>> stores;
+  final List<String> electronics;
 
-  ElectronicsLoaded(this.stores);
+  ElectronicsLoaded(this.electronics);
 
   @override
-  List<Object> get props => [stores];
+  List<Object?> get props => [electronics];
 }
 
 class ElectronicsError extends ElectronicsState {
@@ -24,5 +24,5 @@ class ElectronicsError extends ElectronicsState {
   ElectronicsError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }

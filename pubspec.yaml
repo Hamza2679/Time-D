@@ -122,7 +122,19 @@ flutter:
     - assets/speaker.jpg
     - assets/tablet.jpg
     - assets/tv.jpg
-
+    - assets/antibiotic.jpg
+    - assets/colget.jpg
+    - assets/diclo.jpg
+    - assets/herbaltooth.jpg
+    - assets/panadol.jpg
+    - assets/paracetamol.jpg
+    - assets/Pstore1.jpg
+    - assets/Pstore2.jpg
+    - assets/Pstore3.jpg
+    - assets/Pstore4.jpg
+    - assets/Pstore5.jpg
+    - assets/Pstore6.jpg
+    - assets/signal.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
