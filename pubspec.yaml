@@ -135,6 +135,7 @@ flutter:
     - assets/Pstore5.jpg
     - assets/Pstore6.jpg
     - assets/signal.jpg
+    - assets/Asprine.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

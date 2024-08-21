@@ -3,7 +3,7 @@ import '../../books/books_page.dart';
 import '../../electronics/main/pages/electronics_page.dart';
 import '../../food/main/pages/food_page.dart';
 import '../../gift/gift_page.dart';
-import '../../pharmacy/pharmacy_page.dart';
+import '../../pharmacy/main/page/pharmacy_page.dart';
 import '../../sparepart/sparepart_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/home_bloc.dart';

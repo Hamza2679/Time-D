@@ -23,7 +23,7 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(3.0),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(0.0),
 
           ),
         ),

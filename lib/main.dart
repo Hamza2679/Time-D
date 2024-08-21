@@ -12,6 +12,8 @@ import 'authentication_repository.dart';
 import 'fetures/autentication/login/bloc/login_bloc.dart';
 import 'fetures/autentication/otp/bloc/otp_bloc.dart';
 import 'fetures/home/bloc/home_bloc.dart';
+import 'fetures/pharmacy/main/bloc/pharmacy_bloc.dart';
+import 'fetures/pharmacy/main/bloc/pharmacy_event.dart';
 import 'fetures/splash_screen/bloc/splash_bloc.dart';
 
 void main() async {
@@ -32,6 +34,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => MainBloc()),
         BlocProvider(create: (context) => FoodBloc()),
         BlocProvider(create: (context) => ElectronicsBloc()),
+        BlocProvider(create: (context) => PharmacyBloc()..add(LoadPharmacies())),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
