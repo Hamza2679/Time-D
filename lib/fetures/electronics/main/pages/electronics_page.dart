@@ -8,23 +8,20 @@ class ElectronicsPage extends StatefulWidget {
 }
 
 class _ElectronicsPageState extends State<ElectronicsPage> {
-  String _searchQuery = '';
-
   @override
   Widget build(BuildContext context) {
-    // Filter the electronics based on the search query
-    final filteredStores = electronicsStores.where((store) {
-      return store.name.toLowerCase().contains(_searchQuery.toLowerCase());
-    }).toList();
+    final stores = electronicsStores;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Electronic stores", style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text(
+          "Electronic stores",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(3.0),
           child: Padding(
             padding: const EdgeInsets.all(0.0),
-
           ),
         ),
       ),
@@ -37,9 +34,9 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
             mainAxisSpacing: 8.0,
             childAspectRatio: 3 / 4,
           ),
-          itemCount: filteredStores.length,
+          itemCount: stores.length,
           itemBuilder: (context, index) {
-            final store = filteredStores[index];
+            final store = stores[index];
             return GestureDetector(
               onTap: () {
                 Navigator.push(
