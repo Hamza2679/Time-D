@@ -6,7 +6,7 @@ import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
 import '../../common/common.dart';
 import '../../order/order_view.dart';
-import '../../profile/profile_view.dart';
+import '../../profile/pages/profile_view.dart';
 import '../../common/data.dart';
 import '../widgets/main_widget.dart';
 
