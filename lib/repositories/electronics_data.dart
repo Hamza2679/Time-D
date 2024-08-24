@@ -254,6 +254,25 @@ List<ElectronicsStore> electronicsStores = [
     ],
   ),
   ElectronicsStore(
+    name: "d electronics",
+    location: "123 Main St",
+    image: "assets/Estore2.jpg",
+    items: [
+      ElectronicsItem(name: "Tablet", price: 30000, image: "assets/tablet.jpg"),
+      ElectronicsItem(name: "Smartwatch", price: 2000, image: "assets/smart_watch.jpg"),
+      ElectronicsItem(name: "Laptop", price: 100000, image: "assets/laptop.jpg"),
+      ElectronicsItem(name: "Phone", price: 15000, image: "assets/phone.jpg"),
+      ElectronicsItem(name: "camera", price: 3000, image: "assets/camera.jpg"),
+      ElectronicsItem(name: "drone", price: 20000, image: "assets/drone.jpg"),
+      ElectronicsItem(name: "eirbud", price: 1000, image: "assets/eirbuds.jpg"),
+      ElectronicsItem(name: "haeaset", price: 500, image: "assets/headset.jpg"),
+      ElectronicsItem(name: "speaker", price: 300, image: "assets/speaker.jpg"),
+      ElectronicsItem(name: "4k hd tv", price: 2000, image: "assets/tv.jpg"),
+
+    ],
+  ),
+
+  ElectronicsStore(
     name: "Best Buy",
     location: "123 Main St",
     image: "assets/Estore1.jpg",
