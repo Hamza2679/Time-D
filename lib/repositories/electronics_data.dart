@@ -271,6 +271,7 @@ List<ElectronicsStore> electronicsStores = [
 
     ],
   ),
+  ElectronicsStore(
   name: "d electronics",
   location: "123 Main St",
 image: "assets/Estore2.jpg",
