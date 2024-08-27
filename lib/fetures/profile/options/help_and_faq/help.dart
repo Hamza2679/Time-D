@@ -28,6 +28,22 @@ class HelpFaqPage extends StatelessWidget {
               'How do I delete my account?',
               'To delete your account, go to the settings page and select "Delete Account". Follow the instructions provided.',
             ),
+            _buildFAQItem(
+              'How do I reset my password?',
+              'We are using only otp to verify a user, you can logout from the app by  go to the profile screen and tap on "logout button". Follow the instructions to login again.',
+            ),
+            _buildFAQItem(
+              'How do I contact support?',
+              'You can contact support by visiting the Contact Us page or emailing support@yourapp.com.',
+            ),
+            _buildFAQItem(
+              'Where can I find the latest updates?',
+              'The latest updates are available on the Updates page in the app or on our website.',
+            ),
+            _buildFAQItem(
+              'How do I delete my account?',
+              'To delete your account, go to the settings page and select "Delete Account". Follow the instructions provided.',
+            ),
           ],
         ),
       ),
