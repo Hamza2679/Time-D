@@ -1,9 +1,12 @@
+import 'package:delivery_app/fetures/splash_screen/pages/splash_screen1.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'dart:async'; // For Future.delayed
+
 import 'fetures/home/pages/main_page.dart';
-import 'fetures/splash_screen/pages/splash_screen1.dart';
+import 'fetures/splash_screen/pages/custom.dart';
 
 class AuthenticationRepository extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -21,6 +24,11 @@ class AuthenticationRepository extends GetxService {
   }
 
   _setInitialScreen(User? user) async {
+
+    Get.offAll(() => CustomSplashScreen());
+
+    await Future.delayed(Duration(seconds: 7));
+
     String? token = await _storage.read(key: 'authToken');
     if (token != null) {
       Map<String, dynamic> payload = Jwt.parseJwt(token);

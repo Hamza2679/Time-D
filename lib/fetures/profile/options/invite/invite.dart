@@ -90,7 +90,7 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
   void _inviteContact(Contact contact) async {
     if (contact.phones != null && contact.phones!.isNotEmpty) {
       String phoneNumber = contact.phones!.first.value ?? '';
-      String message = "Hi ${contact.displayName}, join me on this awesome app!";
+      String message = "Hi ${contact.displayName}, join me on this awesome app on https://play.google.com/store/apps/details?id=-----!";
       _sendSMS(message, phoneNumber);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

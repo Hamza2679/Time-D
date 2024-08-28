@@ -2,6 +2,8 @@ import 'package:delivery_app/fetures/home/pages/main_page.dart';
 import 'package:delivery_app/fetures/order/order_view.dart';
 import 'package:delivery_app/fetures/profile/options/contact_us/contact_us_page.dart';
 import 'package:delivery_app/fetures/profile/options/help_and_faq/help.dart';
+import 'package:delivery_app/fetures/profile/options/payment/payment.dart';
+import 'package:delivery_app/fetures/profile/options/setting/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -107,14 +109,20 @@ class ProfileView extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => InviteAndSharePage()),
                       );
                     },),
-                    ProfileOption(icon: Icons.payment, title: 'Payment Methods'),
+                    ProfileOption(icon: Icons.payment, title: 'Payment Methods', onTap: (){
+                      Navigator.push(
+                        context,MaterialPageRoute(builder: (context)=> Payment())
+                      );
+                    },),
                     ProfileOption(icon: Icons.mail, title: 'Contact Us' , onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => ContactUsPage())
                       );
                     },),
-                    ProfileOption(icon: Icons.settings, title: 'Settings'),
+                    ProfileOption(icon: Icons.settings, title: 'Settings', onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Setting()));
+                    },),
                     ProfileOption(icon: Icons.help, title: 'Help & FAQ', onTap: () {
               Navigator.push(
               context,
