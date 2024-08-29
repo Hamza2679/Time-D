@@ -1,6 +1,13 @@
+import 'package:delivery_app/fetures/notification/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../models/book_model.dart';
+import '../../../models/electronics_model.dart';
+import '../../../models/pharmacy_model.dart';
+import '../../electronics/electronics_detail/pages/electronics_detail_page.dart';
 import '../../food/main/pages/food_page.dart';
+import '../../food/restaurant_detail/page/restaurant_detail_page.dart';
+import '../../pharmacy/detail/page/pharmacy_detail_page.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -17,7 +24,8 @@ class MainPage extends StatelessWidget {
     ProfileView(),
   ];
 
-
+  // Example flag to indicate if there are unread notifications
+  final bool hasUnreadNotifications = true; // Replace with actual logic
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +58,34 @@ class MainPage extends StatelessWidget {
                               },
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(Icons.notifications),
-                            onPressed: () {
-                              print("Notification button tapped");
-                            },
+                          Stack(
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.notifications),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => NotificationPage()),
+                                  );
+                                },
+                              ),
+                              if (hasUnreadNotifications)
+                                Positioned(
+                                  right: 8,
+                                  top: 6,
+                                  child: Container(
+                                    padding: EdgeInsets.all(0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.shade900,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    constraints: BoxConstraints(
+                                      minWidth: 15,
+                                      minHeight: 15,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       ),
@@ -72,7 +103,9 @@ class MainPage extends StatelessWidget {
                   ],
                   Expanded(
                     child: state.selectedIndex == 0
-                        ? buildCategoryPage(state.currentCategory)
+                        ? (state.filteredItems.isNotEmpty
+                        ? buildSearchResults(state.currentCategory, state.filteredItems)
+                        : buildCategoryPage(state.currentCategory))
                         : _widgetOptions.elementAt(state.selectedIndex),
                   ),
                 ],
@@ -104,5 +137,90 @@ class MainPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget buildSearchResults(String category, List<dynamic> items) {
+    switch (category) {
+      case 'Food':
+        return ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index] as Map<String, dynamic>;
+            return ListTile(
+              leading: Image.asset(item['image']),
+              title: Text(item['name']),
+              subtitle: Text(item['address']),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>RestaurantDetailPage(
+                  name: restaurants[index]["name"] ?? "Unknown",
+                  image: restaurants[index]["image"] ?? "default_image.png",
+                  address: restaurants[index]["address"] ?? "No address available",
+                  menu: restaurants[index]["menu"] ?? [],
+                ),));
+              },
+            );
+          },
+        );
+      case 'Pharmacy':
+        return ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index] as Pharmacy;
+            return ListTile(
+              leading: Image.asset(item.image),
+              title: Text(item.name),
+              subtitle: Text(item.address),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PharmacyDetailPage(
+                      pharmacy: item,
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      case 'Books':
+        return ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index] as BookStore;
+            return ListTile(
+              leading: Icon(Icons.book),
+              title: Text(item.name), // Access 'name' getter
+              subtitle: Text(item.address),
+              onTap: () {
+                // Handle navigation to BookStore Detail Page
+              },
+            );
+          },
+        );
+      case 'Electronics':
+        return ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index] as ElectronicsStore;
+            return ListTile(
+              leading: Image.asset(item.image),
+              title: Text(item.name),
+              subtitle: Text(item.location),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ElectronicsDetailPage(store: item),
+                  ),
+                );
+              },
+            );
+          },
+        );
+    // Add more categories as needed
+      default:
+        return SizedBox.shrink();
+    }
   }
 }

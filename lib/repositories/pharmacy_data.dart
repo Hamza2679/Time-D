@@ -1,4 +1,3 @@
-// pharmacy_data.dart
 import '../models/pharmacy_model.dart';
 
 final List<Pharmacy> pharmacies = [

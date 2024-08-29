@@ -1,5 +1,3 @@
-// pharmacy_model.dart
-
 class Pharmacy {
   final String name;
   final String address;

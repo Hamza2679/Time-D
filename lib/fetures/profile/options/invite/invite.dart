@@ -34,7 +34,20 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
 
   Future<List<Contact>> fetchContacts() async {
     Iterable<Contact> contacts = await ContactsService.getContacts();
-    return _removeDuplicateContacts(contacts.toList());
+    // Remove duplicates and contacts without valid phone numbers
+    return _removeDuplicateContacts(
+        contacts.where((contact) => _hasValidPhoneNumber(contact)).toList());
+  }
+
+  bool _hasValidPhoneNumber(Contact contact) {
+    if (contact.phones == null || contact.phones!.isEmpty) return false;
+
+    return contact.phones!.any((phone) {
+      final phoneNumber = phone.value?.replaceAll(RegExp(r'\s+'), '') ?? ''; // Remove any spaces
+      return phoneNumber.startsWith('09') ||
+          phoneNumber.startsWith('07') ||
+          phoneNumber.startsWith('+251');
+    });
   }
 
   List<Contact> _removeDuplicateContacts(List<Contact> contacts) {
@@ -44,6 +57,8 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
     }
     return uniqueContacts.values.toList();
   }
+
+
 
   @override
   Widget build(BuildContext context) {

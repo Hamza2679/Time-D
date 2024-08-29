@@ -1,4 +1,3 @@
-// user_model.dart
 import 'dart:io';
 
 class UserModel {
@@ -12,7 +11,6 @@ class UserModel {
     required this.phoneNumber,
   });
 
-  // Method to copy the UserModel with updated fields
   UserModel copyWith({
     File? profileImage,
     String? fullName,
@@ -25,7 +23,6 @@ class UserModel {
     );
   }
 
-  // Factory method to create a UserModel from a map (useful for storage)
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       profileImage: map['profileImage'] != null ? File(map['profileImage']) : null,
@@ -34,7 +31,6 @@ class UserModel {
     );
   }
 
-  // Method to convert UserModel to a map (useful for storage)
   Map<String, dynamic> toMap() {
     return {
       'profileImage': profileImage?.path,
