@@ -73,9 +73,8 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
-  void _saveProfile() {
+  void saveProfile() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Save profile logic here
       Navigator.pop(context);
     }
   }
@@ -111,7 +110,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         ? FileImage(_profileImage!)
                         : null,
                     child: _profileImage == null
-                        ? Icon(Icons.camera_alt, size: 40)
+                        ? Icon(Icons.camera_alt, size: 40,color: Colors.black,)
                         : null,
                   ),
 
@@ -170,7 +169,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     backgroundColor: Colors.deepOrange, // Text color
                   ),
                   onPressed: () {
-                    _saveProfile();
+                    saveProfile();
                   },
                   child: Text("Save Profile"),
                 ),

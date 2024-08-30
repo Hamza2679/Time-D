@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/pharmacy_bloc.dart';
-import '../../../../models/pharmacy_model.dart';
-import '../../../../repositories/pharmacy_data.dart'; // Import the data including the drugs list
 import '../../detail/page/pharmacy_detail_page.dart';
 import '../bloc/pharmacy_state.dart';
 
@@ -12,7 +10,39 @@ class PharmacyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pharmacies'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.orangeAccent, Colors.deepOrange],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            image: DecorationImage(
+              image: AssetImage('assets/appicon.png'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.2),
+                BlendMode.dstATop,
+              ),
+            ),
+          ),
+        ),
+        title: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              'Pharmacy',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
       body: BlocBuilder<PharmacyBloc, PharmacyState>(
         builder: (context, state) {

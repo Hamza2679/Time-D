@@ -1,5 +1,3 @@
-// electronics_state.dart
-
 import 'package:equatable/equatable.dart';
 
 abstract class ElectronicsState extends Equatable {

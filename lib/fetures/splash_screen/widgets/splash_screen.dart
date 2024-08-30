@@ -1,4 +1,3 @@
-// splash_screen.dart
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -6,6 +5,8 @@ class SplashScreen extends StatelessWidget {
   final String text;
   final VoidCallback onNext;
   final VoidCallback onSkip;
+  final int currentPage;
+  final int totalPages;
 
   const SplashScreen({
     Key? key,
@@ -13,6 +14,8 @@ class SplashScreen extends StatelessWidget {
     required this.text,
     required this.onNext,
     required this.onSkip,
+    required this.currentPage,
+    required this.totalPages,
   }) : super(key: key);
 
   @override
@@ -22,44 +25,78 @@ class SplashScreen extends StatelessWidget {
         preferredSize: Size.fromHeight(50.0),
         child: AppBar(
           backgroundColor: Colors.deepOrange,
-           title: Text('Hello Delivery',style: TextStyle(color: Colors.white),),
+          title: Text(
+            'Hello Delivery',
+            style: TextStyle(color: Colors.white),
+          ),
+          elevation: 0,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          if (details.primaryVelocity! < 0) {
+            onNext();
+          }
+        },
+        child: Stack(
           children: [
-            SizedBox(height: 80,),
-            Image.asset(imagePath),
-            SizedBox(height: 20),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 60),
-            ElevatedButton(
-              onPressed: onNext,
-              child: Text('Next',style: TextStyle(color: Colors.white)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepOrange,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 40),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(imagePath),
+                  SizedBox(height: 20),
+                  Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      totalPages,
+                          (index) => buildDot(index: index),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                ],
               ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: onSkip,
-              child: Text('Skip' ,style: TextStyle(color: Colors.white),),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepOrange,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 40),
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: Row(
+                children: [
+                  TextButton(
+                    onPressed: onSkip,
+                    child: Text(
+                      'Skip',
+                      style: TextStyle(color: Colors.deepOrange, fontSize: 16),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward, color: Colors.deepOrange),
+                    onPressed: onNext,
+                  ),
+                ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildDot({required int index}) {
+    return Container(
+      margin: EdgeInsets.only(right: 5),
+      height: 10,
+      width: 10,
+      decoration: BoxDecoration(
+        color: currentPage == index ? Colors.deepOrange : Colors.grey,
+        shape: BoxShape.circle,
       ),
     );
   }

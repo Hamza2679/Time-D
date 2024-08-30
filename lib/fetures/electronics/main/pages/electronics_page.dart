@@ -14,20 +14,45 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Electronic stores",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.orangeAccent, Colors.deepOrange],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            image: DecorationImage(
+              image: AssetImage('assets/appicon.png'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.2),
+                BlendMode.dstATop,
+              ),
+            ),
+          ),
         ),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(3.0),
-          child: Padding(
-            padding: const EdgeInsets.all(0.0),
+        title: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              'Electronic store',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
+
         child: GridView.builder(
+
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 8.0,

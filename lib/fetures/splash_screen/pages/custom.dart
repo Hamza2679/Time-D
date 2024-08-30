@@ -15,7 +15,6 @@ class CustomSplashScreen extends StatelessWidget {
             ),
           ),
 
-          // Centered Circle Avatar
           Center(
             child: CircleAvatar(
               radius: 70,
@@ -37,7 +36,7 @@ class CustomSplashScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
-                CircularProgressIndicator(),
+                CircularProgressIndicator(color: Colors.deepOrange,),
               ],
             ),
           ),

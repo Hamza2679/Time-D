@@ -5,6 +5,7 @@ import '../../../common/finish_page.dart';
 import '../bloc/electronics_detail_bloc.dart';
 import '../bloc/electronics_detail_event.dart';
 import '../bloc/electronics_detail_state.dart';
+
 class ElectronicsDetailPage extends StatelessWidget {
   final ElectronicsStore store;
 
@@ -39,7 +40,7 @@ class ElectronicsDetailPage extends StatelessWidget {
               ),
               Text(store.location),
               SizedBox(height: 10),
-              Text('Items:'),
+              Text('Items',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
               Expanded(
                 child: BlocBuilder<ElectronicsDetailBloc, ElectronicsDetailState>(
                   builder: (context, state) {
@@ -48,33 +49,52 @@ class ElectronicsDetailPage extends StatelessWidget {
                         itemCount: store.items.length,
                         itemBuilder: (context, index) {
                           var item = store.items[index];
-                          return ListTile(
-                            leading: Image.asset(
-                              item.image,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
+                          return Card(
+                            elevation: 4.0,  // Add elevation here
+                            margin: EdgeInsets.symmetric(vertical: 8.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
-                            title: Text(item.name),
-                            subtitle: Text('Price: \$${item.price.toStringAsFixed(0)}'),
-                            trailing: Container(
-                              width: 120,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.remove),
-                                    onPressed: () {
-                                      context.read<ElectronicsDetailBloc>().add(UpdateQuantityEvent(item.name, -1));
-                                    },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.asset(
+                                    item.image,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
                                   ),
-                                  Text('${state.quantities[item.name] ?? 0}'),
-                                  IconButton(
-                                    icon: Icon(Icons.add),
-                                    onPressed: () {
-                                      context.read<ElectronicsDetailBloc>().add(UpdateQuantityEvent(item.name, 1));
-                                    },
+                                ),
+                                title: Text(item.name),
+                                subtitle: Text('Price: \$${item.price.toStringAsFixed(0)}'),
+                                trailing: Container(
+                                  width: 100,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      _buildQuantityButton(
+                                        icon: Icons.remove,
+                                        color: Colors.red,
+                                        onPressed: () {
+                                          context.read<ElectronicsDetailBloc>().add(UpdateQuantityEvent(item.name, -1));
+                                        },
+                                      ),
+                                      Text(
+                                        '${state.quantities[item.name] ?? 0}',
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                      ),
+                                      _buildQuantityButton(
+                                        icon: Icons.add,
+                                        color: Colors.green,
+                                        onPressed: () {
+                                          context.read<ElectronicsDetailBloc>().add(UpdateQuantityEvent(item.name, 1));
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           );
@@ -134,7 +154,7 @@ class ElectronicsDetailPage extends StatelessWidget {
                                 },
                               );
                             },
-                            child: Text("Buy Now"),
+                            child: Text("Order Now"),
                           ),
                         ],
                       ),
@@ -146,6 +166,27 @@ class ElectronicsDetailPage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildQuantityButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        iconSize: 18,
+        icon: Icon(icon, color: Colors.white),
+        onPressed: onPressed,
       ),
     );
   }

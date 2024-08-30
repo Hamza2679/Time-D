@@ -1,9 +1,5 @@
-import 'package:delivery_app/fetures/autentication/otp/pages/otp_page.dart';
 import 'package:delivery_app/fetures/electronics/main/bloc/electronics_bloc.dart';
 import 'package:delivery_app/fetures/food/main/bloc/food_bloc.dart';
-import 'package:delivery_app/fetures/food/restaurant_detail/bloc/restaurant_detail_bloc.dart';
-import 'package:delivery_app/fetures/home/pages/main_page.dart';
-import 'package:delivery_app/fetures/splash_screen/pages/splash_screen1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -15,6 +11,7 @@ import 'fetures/home/bloc/home_bloc.dart';
 import 'fetures/pharmacy/main/bloc/pharmacy_bloc.dart';
 import 'fetures/pharmacy/main/bloc/pharmacy_event.dart';
 import 'fetures/splash_screen/bloc/splash_bloc.dart';
+import 'fetures/splash_screen/pages/custom.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +35,7 @@ class MyApp extends StatelessWidget {
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        home: SplashScreen1(),
+        home: CustomSplashScreen(),
       ),
     );
   }

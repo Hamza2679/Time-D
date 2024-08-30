@@ -1,4 +1,3 @@
-// profile_state.dart
 part of 'profile_bloc.dart';
 
 abstract class ProfileState extends Equatable {

@@ -1,5 +1,3 @@
-// electronics_event.dart
-
 import 'package:equatable/equatable.dart';
 
 abstract class ElectronicsEvent extends Equatable {

@@ -1,4 +1,3 @@
-import 'package:delivery_app/fetures/profile/pages/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
@@ -8,7 +7,6 @@ class ContactUsPage extends StatelessWidget {
   void _submitForm() {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final formData = _formKey.currentState?.value;
-      // Handle form submission, e.g., send an email or save to a database
       print('Form Data: $formData');
     } else {
       print('Form is invalid');
@@ -73,6 +71,7 @@ class ContactUsPage extends StatelessWidget {
                   backgroundColor: Colors.deepOrange, // Text color
                 ),
                 onPressed: () {
+                  _submitForm();
                   Navigator.pop(
                       context
                   );

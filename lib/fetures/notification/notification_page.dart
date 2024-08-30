@@ -78,7 +78,7 @@ class _NotificationTileState extends State<NotificationTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      margin: EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.grey.shade50, Colors.grey.shade50],
@@ -88,7 +88,7 @@ class _NotificationTileState extends State<NotificationTile> {
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.black54,
             blurRadius: 6.0,
             offset: Offset(0, 2),
           ),

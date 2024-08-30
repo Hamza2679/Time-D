@@ -28,39 +28,49 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset(widget.pharmacy.image, width: double.infinity, height: 200, fit: BoxFit.cover),
-            SizedBox(height: 16.0),
+            SizedBox(height: 6.0),
             Text(
               widget.pharmacy.name,
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
+            SizedBox(height: 4.0),
             Text(
               widget.pharmacy.address,
               style: TextStyle(fontSize: 16.0, color: Colors.grey[600]),
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: 6.0),
             Text(
               'Available Drugs',
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8.0),
+            SizedBox(height: 4.0),
             Expanded(
               child: ListView.builder(
                 itemCount: widget.pharmacy.drugs.length,
                 itemBuilder: (context, index) {
                   final drug = widget.pharmacy.drugs[index];
                   return Card(
+                    elevation: 4.0,  // Add elevation here
                     margin: EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: Image.asset(
-                        drug.image,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(
+                            drug.image,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        title: Text(drug.name),
+                        subtitle: Text('\$${drug.price.toStringAsFixed(2)}'),
+                        trailing: _buildQuantitySelector(drug, index),
                       ),
-                      title: Text(drug.name),
-                      subtitle: Text('\$${drug.price.toStringAsFixed(2)}'),
-                      trailing: _buildQuantitySelector(drug, index),
                     ),
                   );
                 },
@@ -80,8 +90,9 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          icon: Icon(Icons.remove),
+        _buildQuantityButton(
+          icon: Icons.remove,
+          color: Colors.red,
           onPressed: () {
             setState(() {
               if (quantity > 0) {
@@ -90,9 +101,15 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
             });
           },
         ),
-        Text('$quantity'),
-        IconButton(
-          icon: Icon(Icons.add),
+        SizedBox(width: 8),
+        Text(
+          '$quantity',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(width: 8),
+        _buildQuantityButton(
+          icon: Icons.add,
+          color: Colors.green,
           onPressed: () {
             setState(() {
               _quantities[index] = ++quantity;
@@ -103,6 +120,27 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
     );
   }
 
+  Widget _buildQuantityButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        iconSize: 18,
+        icon: Icon(icon, color: Colors.white),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
   Widget _buildBuyNowButton() {
     double totalPrice = _quantities.entries.fold(0.0, (sum, entry) {
       final drug = widget.pharmacy.drugs[entry.key];
@@ -110,7 +148,6 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
     });
 
     return Container(
-
       color: Colors.deepOrange,
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -148,7 +185,7 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
                 },
               );
             },
-            child: Text("Buy Now"),
+            child: Text("Order Now"),
           ),
         ],
       ),

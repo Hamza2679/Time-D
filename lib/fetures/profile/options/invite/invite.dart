@@ -34,7 +34,6 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
 
   Future<List<Contact>> fetchContacts() async {
     Iterable<Contact> contacts = await ContactsService.getContacts();
-    // Remove duplicates and contacts without valid phone numbers
     return _removeDuplicateContacts(
         contacts.where((contact) => _hasValidPhoneNumber(contact)).toList());
   }
@@ -43,7 +42,7 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
     if (contact.phones == null || contact.phones!.isEmpty) return false;
 
     return contact.phones!.any((phone) {
-      final phoneNumber = phone.value?.replaceAll(RegExp(r'\s+'), '') ?? ''; // Remove any spaces
+      final phoneNumber = phone.value?.replaceAll(RegExp(r'\s+'), '') ?? '';
       return phoneNumber.startsWith('09') ||
           phoneNumber.startsWith('07') ||
           phoneNumber.startsWith('+251');
@@ -64,11 +63,42 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Invite and Share', style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepOrange, Colors.deepOrangeAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            image: DecorationImage(
+              image: AssetImage('assets/appicon.png'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.2),
+                BlendMode.dstATop,
+              ),
+            ),
+          ),
+        ),
+        title: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              'Invite and Share',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
       body: _contacts.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: Colors.deepOrange,))
           : ListView.builder(
         itemCount: _contacts.length,
         itemBuilder: (context, index) {
@@ -93,7 +123,7 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
               subtitle: contact.phones != null && contact.phones!.isNotEmpty
                   ? Text(contact.phones!.first.value ?? '')
                   : Text('No phone number'),
-              onTap: () => _inviteContact(contact),
+              onTap: () => inviteContact(contact),
               trailing: Icon(Icons.send, color: Colors.deepOrange),
             ),
           );
@@ -102,7 +132,7 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
     );
   }
 
-  void _inviteContact(Contact contact) async {
+  void inviteContact(Contact contact) async {
     if (contact.phones != null && contact.phones!.isNotEmpty) {
       String phoneNumber = contact.phones!.first.value ?? '';
       String message = "Hi ${contact.displayName}, join me on this awesome app on https://play.google.com/store/apps/details?id=-----!";

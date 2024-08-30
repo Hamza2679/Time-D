@@ -1,20 +1,13 @@
 import 'package:delivery_app/fetures/notification/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../models/book_model.dart';
-import '../../../models/electronics_model.dart';
-import '../../../models/pharmacy_model.dart';
-import '../../electronics/electronics_detail/pages/electronics_detail_page.dart';
+import '../../../repositories/category_data.dart';
 import '../../food/main/pages/food_page.dart';
-import '../../food/restaurant_detail/page/restaurant_detail_page.dart';
-import '../../pharmacy/detail/page/pharmacy_detail_page.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
-import '../../common/common.dart';
 import '../../order/order_view.dart';
 import '../../profile/pages/profile_view.dart';
-import '../../common/data.dart';
 import '../widgets/main_widget.dart';
 
 class MainPage extends StatelessWidget {
@@ -24,8 +17,7 @@ class MainPage extends StatelessWidget {
     ProfileView(),
   ];
 
-  // Example flag to indicate if there are unread notifications
-  final bool hasUnreadNotifications = true; // Replace with actual logic
+  final bool hasUnreadNotifications = true;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +46,8 @@ class MainPage extends StatelessWidget {
                             child: buildSearchBar(
                               height: 40,
                               onChanged: (query) {
-                                BlocProvider.of<MainBloc>(context).add(SearchQueryChanged(query));
+                                BlocProvider.of<MainBloc>(context).add(
+                                    SearchQueryChanged(query));
                               },
                             ),
                           ),
@@ -65,7 +58,8 @@ class MainPage extends StatelessWidget {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => NotificationPage()),
+                                    MaterialPageRoute(builder: (context) =>
+                                        NotificationPage()),
                                   );
                                 },
                               ),
@@ -90,26 +84,55 @@ class MainPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 0),
-                    Text(
-                      'Categories',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.category,
+                            color: Colors.black,
+                            size: 28,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Categories',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              foreground: Paint()
+                                ..shader = LinearGradient(
+                                  colors: <Color>[Colors.black, Colors.black],
+                                ).createShader(
+                                    Rect.fromLTWH(0.0, 0.0, 200.0, 70.0)),
+                              shadows: [
+                                Shadow(
+                                  offset: Offset(2.0, 2.0),
+                                  blurRadius: 3.0,
+                                  color: Colors.black.withOpacity(0.3),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 8),
+
+                    SizedBox(height: 7),
                     buildCategories(context, categories, state.currentCategory),
                   ],
+
                   Expanded(
                     child: state.selectedIndex == 0
                         ? (state.filteredItems.isNotEmpty
-                        ? buildSearchResults(state.currentCategory, state.filteredItems)
+                        ? buildSearchResults(
+                        state.currentCategory, state.filteredItems)
                         : buildCategoryPage(state.currentCategory))
                         : _widgetOptions.elementAt(state.selectedIndex),
                   ),
                 ],
-              ),
+              )
+              ,
+
               bottomNavigationBar: BottomNavigationBar(
                 items: const <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
@@ -133,94 +156,9 @@ class MainPage extends StatelessWidget {
               ),
             );
           }
-          return Container(); // Return an empty container for other states, if any
+          return Container();
         },
       ),
     );
-  }
-
-  Widget buildSearchResults(String category, List<dynamic> items) {
-    switch (category) {
-      case 'Food':
-        return ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index] as Map<String, dynamic>;
-            return ListTile(
-              leading: Image.asset(item['image']),
-              title: Text(item['name']),
-              subtitle: Text(item['address']),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>RestaurantDetailPage(
-                  name: restaurants[index]["name"] ?? "Unknown",
-                  image: restaurants[index]["image"] ?? "default_image.png",
-                  address: restaurants[index]["address"] ?? "No address available",
-                  menu: restaurants[index]["menu"] ?? [],
-                ),));
-              },
-            );
-          },
-        );
-      case 'Pharmacy':
-        return ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index] as Pharmacy;
-            return ListTile(
-              leading: Image.asset(item.image),
-              title: Text(item.name),
-              subtitle: Text(item.address),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PharmacyDetailPage(
-                      pharmacy: item,
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        );
-      case 'Books':
-        return ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index] as BookStore;
-            return ListTile(
-              leading: Icon(Icons.book),
-              title: Text(item.name), // Access 'name' getter
-              subtitle: Text(item.address),
-              onTap: () {
-                // Handle navigation to BookStore Detail Page
-              },
-            );
-          },
-        );
-      case 'Electronics':
-        return ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index] as ElectronicsStore;
-            return ListTile(
-              leading: Image.asset(item.image),
-              title: Text(item.name),
-              subtitle: Text(item.location),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ElectronicsDetailPage(store: item),
-                  ),
-                );
-              },
-            );
-          },
-        );
-    // Add more categories as needed
-      default:
-        return SizedBox.shrink();
-    }
   }
 }

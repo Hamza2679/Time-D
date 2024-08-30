@@ -27,7 +27,7 @@ class CountryCodeChanged extends LoginEvent {
 }
 
 class SubmitPhoneNumber extends LoginEvent {
-  final BuildContext context; // Pass context to navigate
+  final BuildContext context;
 
   const SubmitPhoneNumber(this.context);
 

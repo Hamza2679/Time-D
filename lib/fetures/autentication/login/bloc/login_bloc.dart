@@ -33,9 +33,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             emit(LoginFailure(e.message ?? 'Unknown error'));
           },
           codeSent: (String verificationId, int? resendToken) {
-            // Navigate to the OTP page
-            Navigator.pushReplacement(
-              event.context, // Pass context through event
+            Navigator.push(
+              event.context,
               MaterialPageRoute(
                 builder: (context) => OtpVerificationPage(
                   phoneNumber: '$_countryCode$_phoneNumber',
@@ -43,7 +42,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
                 ),
               ),
             );
-            emit(LoginCodeSent(verificationId)); // Add this state to handle in the UI
+            emit(LoginCodeSent(verificationId));
           },
           codeAutoRetrievalTimeout: (String verificationId) {},
         );

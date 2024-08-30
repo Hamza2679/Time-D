@@ -1,4 +1,3 @@
-// splash_screen1.dart
 import 'package:delivery_app/fetures/splash_screen/pages/splash_screen_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +32,8 @@ class SplashScreen1 extends StatelessWidget {
               MaterialPageRoute(builder: (context) => LoginPage()),
             );
           },
+          currentPage: 0,
+          totalPages: 3,
         ),
       ),
     );

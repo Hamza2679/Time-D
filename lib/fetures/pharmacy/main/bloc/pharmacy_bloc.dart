@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'pharmacy_event.dart';
 import 'pharmacy_state.dart';
-import '../../../../repositories/pharmacy_data.dart'; // Ensure correct path
+import '../../../../repositories/pharmacy_data.dart';
 
 class PharmacyBloc extends Bloc<PharmacyEvent, PharmacyState> {
   PharmacyBloc() : super(PharmacyInitial()) {
@@ -11,8 +11,8 @@ class PharmacyBloc extends Bloc<PharmacyEvent, PharmacyState> {
   void _onLoadPharmacies(LoadPharmacies event, Emitter<PharmacyState> emit) async {
     emit(PharmacyLoading());
     try {
-      await Future.delayed(Duration(seconds: 1));
-      emit(PharmacyLoaded(pharmacies)); // Make sure 'pharmacies' is not empty
+      await Future.delayed(Duration(seconds: 0));
+      emit(PharmacyLoaded(pharmacies));
     } catch (e) {
       emit(PharmacyError('Failed to load pharmacies'));
     }

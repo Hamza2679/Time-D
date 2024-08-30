@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:get/get.dart';
-import 'package:jwt_decode/jwt_decode.dart';
 import 'dart:convert';
 import '../../../../authentication_repository.dart';
 import '../../../home/pages/main_page.dart';
@@ -12,13 +11,13 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _selectedCountryCode = '+251';
   String _countryFlag = '🇪🇹';
+  bool _isLoading = false; // Add a loading state
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 50),
                 Text(
-                  'Enter your phone number to login',
+                  'Login with your phone number to use the app',
                   style: TextStyle(
                     color: Colors.deepOrange,
                     fontSize: 16,
@@ -99,12 +98,17 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
+                _isLoading
+                    ? CircularProgressIndicator(color: Colors.deepOrange,)
+                    : ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        _isLoading = true; // Start loading
+                      });
                       _verifyPhoneNumber(context);
                     }
                   },
@@ -112,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 30),
                 Text(
-                  'If you\'re experiencing issues logging in, please don\'t hesitate to call us at 6544.',
+                  'If you\'re experiencing issues logging in, please don\'t hesitate to contact us on ----.',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,
@@ -135,15 +139,28 @@ class _LoginPageState extends State<LoginPage> {
       verificationCompleted: (PhoneAuthCredential credential) async {
         await FirebaseAuth.instance.signInWithCredential(credential);
         _setLoginState();
+        setState(() {
+          _isLoading = false; // Stop loading
+        });
         Get.offAll(() => MainPage());
       },
       verificationFailed: (FirebaseAuthException e) {
+        setState(() {
+          _isLoading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to verify phone number: ${e.message}')));
       },
       codeSent: (String verificationId, int? resendToken) {
+        setState(() {
+          _isLoading = false;
+        });
         Get.offAll(() => OtpVerificationPage(verificationId: verificationId, phoneNumber: phoneNumber));
       },
-      codeAutoRetrievalTimeout: (String verificationId) {},
+      codeAutoRetrievalTimeout: (String verificationId) {
+        setState(() {
+          _isLoading = false;
+        });
+      },
     );
   }
 

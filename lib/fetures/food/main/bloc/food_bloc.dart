@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../repositories/food_data.dart';
 import 'food_event.dart';
 import 'food_state.dart';
-import '../../../common/data.dart';
 
 class FoodBloc extends Bloc<FoodEvent, FoodState> {
   FoodBloc() : super(FoodInitial()) {
@@ -11,7 +11,6 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       emit(FoodLoaded(filteredRestaurants));
     });
 
-    // Emit initial state with an empty query to trigger loading
     add(SearchQueryChanged(''));
   }
 

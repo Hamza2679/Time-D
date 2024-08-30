@@ -1,8 +1,6 @@
-// splash_screen3.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/splash_bloc.dart';
-import '../bloc/splash_event.dart';
 import '../bloc/splash_state.dart';
 import '../widgets/splash_screen.dart';
 import 'package:delivery_app/fetures/autentication/login/pages/login_page.dart';
@@ -35,6 +33,8 @@ class SplashScreen3 extends StatelessWidget {
               MaterialPageRoute(builder: (context) => LoginPage()),
             );
           },
+          currentPage: 2,
+          totalPages: 3,
         ),
       ),
     );

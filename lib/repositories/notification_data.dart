@@ -29,6 +29,16 @@ List<NotificationModel> notifications = [
   NotificationModel(
     title: "New ",
     date: DateTime.now().subtract(Duration(days: 9)),
-    detail: "Version 1.2.0 is now available with new features and improvements.",
+    detail: "Version 1.1.0 is now available with new features and improvements.",
+  ),
+  NotificationModel(
+    title: "New Update Available",
+    date: DateTime.now().subtract(Duration(days: 31)),
+    detail: "Version 1.0.1 is now available with new features and improvements.",
+  ),
+  NotificationModel(
+    title: "order created success fully",
+    date: DateTime.now().subtract(Duration(days: 34)),
+    detail: "Version 1.0.0 is now available with new features and improvements.",
   ),
 ];

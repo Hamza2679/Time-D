@@ -8,7 +8,6 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
 
   OtpBloc() : super(OtpInitial()) {
     on<OtpChanged>((event, emit) {
-      // Handle OTP change logic if needed
     });
 
     on<VerifyOtp>((event, emit) async {
