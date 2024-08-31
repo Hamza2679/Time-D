@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../models/order_model.dart';
+import '../../../order/order_view.dart';
 import '../bloc/restaurant_detail_bloc.dart';
 import '../bloc/restaurant_detail_event.dart';
 import '../bloc/restaurant_detail_state.dart';
@@ -78,7 +80,6 @@ class RestaurantDetailPage extends StatelessWidget {
                                   style: TextStyle(color: Colors.grey[700])),
                               trailing: Container(
                                 width: 80,
-                                // Adjusted width to fit smaller buttons
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment
                                       .spaceBetween,
@@ -92,15 +93,17 @@ class RestaurantDetailPage extends StatelessWidget {
                                             DecrementQuantity(index));
                                       },
                                     ),
+                                    SizedBox(width: 2,),
                                     Text(
                                       state.quantities[index].toString(),
                                       style: TextStyle(fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
+                                    SizedBox(width: 2,),
                                     buildQuantityButton(
                                       icon: Icons.add,
                                       color: Colors.green,
-                                      size: 20, // Smaller icon size
+                                      size: 20,
                                       onPressed: () {
                                         context.read<RestaurantBloc>().add(
                                             IncrementQuantity(index));
@@ -147,27 +150,36 @@ class RestaurantDetailPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
+                              final selectedItems = <OrderItem>[];
+                              for (int i = 0; i < state.quantities.length; i++) {
+                                if (state.quantities[i]! > 0) {
+                                  selectedItems.add(
+                                    OrderItem(
+                                      restaurantName: name,
+                                      itemName: menu[i]["name"]!,
+                                      quantity: state.quantities[i] ?? 0,
+                                      price: double.parse(menu[i]["price"]!.replaceAll('\$', '')),
+                                    ),
+                                  );
+                                }
+                              }
+                              await saveOrders(selectedItems);
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text("Order Summary"),
-                                    content: Text(
-                                        "Total Price: \$${state.totalPrice
-                                            .toStringAsFixed(2)}"),
+                                    content: Container(
+                                      width: double.maxFinite,
+                                      height: 300,
+                                      child: OrderView(),
+                                    ),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: Text("OK", style: TextStyle(
-                                            color: Colors.deepOrange)),
+                                        child: Text("OK", style: TextStyle(color: Colors.deepOrange)),
                                         onPressed: () {
-                                          Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FinishPage()),
-                                                (Route<dynamic> route) => false,
-                                          );
+                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>FinishPage()));
                                         },
                                       ),
                                     ],
@@ -175,6 +187,8 @@ class RestaurantDetailPage extends StatelessWidget {
                                 },
                               );
                             },
+
+
                             child: Text(
                                 "Order Now", style: TextStyle(fontSize: 18)),
                           ),

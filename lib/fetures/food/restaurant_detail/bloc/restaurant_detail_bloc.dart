@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../models/order_model.dart';
 import 'restaurant_detail_event.dart';
 import 'restaurant_detail_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   final List<Map<String, String>> menu;
@@ -45,4 +49,29 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
       _totalPrice += price * quantity;
     });
   }
+}
+
+Future<void> saveOrders(List<OrderItem> newOrderItems) async {
+  final prefs = await SharedPreferences.getInstance();
+  List<String> orderJsonList = prefs.getStringList('orderItems') ?? [];
+  List<OrderItem> existingOrders = orderJsonList.map((json) => OrderItem.fromJson(jsonDecode(json))).toList();
+  Map<String, List<OrderItem>> groupedOrders = {};
+  for (var item in existingOrders) {
+    if (!groupedOrders.containsKey(item.restaurantName)) {
+      groupedOrders[item.restaurantName] = [];
+    }
+    groupedOrders[item.restaurantName]!.add(item);
+  }
+  for (var item in newOrderItems) {
+    if (!groupedOrders.containsKey(item.restaurantName)) {
+      groupedOrders[item.restaurantName] = [];
+    }
+    groupedOrders[item.restaurantName]!.add(item);
+  }
+  List<OrderItem> allOrders = [];
+  groupedOrders.forEach((restaurant, items) {
+    allOrders.addAll(items);
+  });
+  orderJsonList = allOrders.map((item) => jsonEncode(item.toJson())).toList();
+  prefs.setStringList('orderItems', orderJsonList);
 }

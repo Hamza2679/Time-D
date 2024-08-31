@@ -69,15 +69,15 @@ Widget buildRestaurants(BuildContext context, List<Map<String, dynamic>> restaur
 
 Widget buildQuantityButton({required IconData icon, required Color color, required double size, required VoidCallback onPressed}) {
   return Container(
-    width: 28,
-    height: 28,
+    width: 32,
+    height: 32,
     decoration: BoxDecoration(
       color: color,
       shape: BoxShape.circle,
     ),
     child: IconButton(
       padding: EdgeInsets.zero,
-      iconSize: size, // Smaller icon size
+      iconSize: 32,
       icon: Icon(icon, color: Colors.white),
       onPressed: onPressed,
     ),

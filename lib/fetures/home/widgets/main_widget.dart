@@ -197,15 +197,6 @@ Widget buildSearchResults(String category, List<dynamic> items) {
       return SizedBox.shrink();
   }
 }
-// Widget buildHeader(String text) {
-//   return Text(
-//     text,
-//     style: TextStyle(
-//       fontSize: 24,
-//       fontWeight: FontWeight.bold,
-//     ),
-//   );
-//}
 
 Widget buildSearchBar({double height = 56.0, required ValueChanged<String> onChanged}) {
   return Container(

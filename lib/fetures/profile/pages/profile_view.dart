@@ -29,12 +29,11 @@ class ProfileView extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Upper part with elevation
               Material(
                 elevation: 4,
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(2.0),
                   child: Column(
                     children: [
                       CircleAvatar(
@@ -80,8 +79,7 @@ class ProfileView extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
-              // Lower part with options
+              SizedBox(height: 15),
               Expanded(
                 child: Material(
                   elevation: 2,
@@ -145,18 +143,16 @@ class ProfileView extends StatelessWidget {
                                     ),
                                   ),
                                   content: Text(
-                                    "Street:____, Block:___, Home:____",
+                                    "Street:____, /t Block:___, Home:____",
                                     style: TextStyle(color: Colors.grey[700]),
                                   ),
                                   actions: <Widget>[
                                     TextButton(
                                       child: Text("OK"),
                                       onPressed: () {
-                                        Navigator.pushAndRemoveUntil(
+                                        Navigator.pop(
                                           context,
-                                          MaterialPageRoute(
-                                              builder: (context) => ProfileView()),
-                                              (Route<dynamic> route) => false,
+
                                         );
                                       },
                                     ),

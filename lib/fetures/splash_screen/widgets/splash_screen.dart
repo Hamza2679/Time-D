@@ -69,16 +69,13 @@ class SplashScreen extends StatelessWidget {
               right: 16,
               child: Row(
                 children: [
-                  TextButton(
+                  TextButton.icon(
                     onPressed: onSkip,
-                    child: Text(
+                    label: Text(
                       'Skip',
                       style: TextStyle(color: Colors.deepOrange, fontSize: 16),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.arrow_forward, color: Colors.deepOrange),
-                    onPressed: onNext,
+                    icon: Icon(Icons.fast_forward, color: Colors.deepOrange),
                   ),
                 ],
               ),
