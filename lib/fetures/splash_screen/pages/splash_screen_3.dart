@@ -11,10 +11,7 @@ class SplashScreen3 extends StatelessWidget {
     return BlocListener<SplashBloc, SplashState>(
       listener: (context, state) {
         if (state is SplashNavigate) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => state.nextScreen),
-          );
+          _navigateToNextScreen(context, state.nextScreen);
         }
       },
       child: Scaffold(
@@ -22,20 +19,35 @@ class SplashScreen3 extends StatelessWidget {
           imagePath: 'assets/splash2.png',
           text: 'Get fast and reliable delivery at your doorstep.',
           onNext: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
-            );
+            _navigateToNextScreen(context, LoginPage());
           },
           onSkip: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
-            );
+            _navigateToNextScreen(context, LoginPage());
           },
           currentPage: 2,
           totalPages: 3,
         ),
+      ),
+    );
+  }
+
+  void _navigateToNextScreen(BuildContext context, Widget nextScreen) {
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = Offset(1.0, 0.0);
+          var end = Offset.zero;
+          var curve = Curves.easeInOut;
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
     );
   }

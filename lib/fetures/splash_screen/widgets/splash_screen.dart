@@ -70,6 +70,23 @@ class SplashScreen extends StatelessWidget {
               child: Row(
                 children: [
                   TextButton.icon(
+                    onPressed: onNext,
+
+                    icon: Icon(Icons.navigate_next, color: Colors.deepOrange),
+                    label: Text(
+                      'next',
+                      style: TextStyle(color: Colors.deepOrange, fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              left: 16,
+              child: Row(
+                children: [
+                  TextButton.icon(
                     onPressed: onSkip,
                     label: Text(
                       'Skip',

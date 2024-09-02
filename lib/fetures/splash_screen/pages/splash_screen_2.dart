@@ -1,10 +1,10 @@
-import 'package:delivery_app/fetures/splash_screen/pages/splash_screen_3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/splash_bloc.dart';
 import '../bloc/splash_event.dart';
 import '../bloc/splash_state.dart';
 import '../widgets/splash_screen.dart';
+import 'package:delivery_app/fetures/splash_screen/pages/splash_screen_3.dart';
 import 'package:delivery_app/fetures/autentication/login/pages/login_page.dart';
 
 class SplashScreen2 extends StatelessWidget {
@@ -13,28 +13,43 @@ class SplashScreen2 extends StatelessWidget {
     return BlocListener<SplashBloc, SplashState>(
       listener: (context, state) {
         if (state is SplashNavigate) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => state.nextScreen),
-          );
+          _navigateToNextScreen(context, state.nextScreen);
         }
       },
       child: Scaffold(
         body: SplashScreen(
           imagePath: 'assets/splash1.jpg',
-          text: 'Easily find your favorite products. Order from any ware.',
+          text: 'Easily find your favorite products. Order from anywhere.',
           onNext: () {
             BlocProvider.of<SplashBloc>(context).add(NextScreenEvent(SplashScreen3()));
           },
           onSkip: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
-            );
+            _navigateToNextScreen(context, LoginPage());
           },
           currentPage: 1,
           totalPages: 3,
         ),
+      ),
+    );
+  }
+
+  void _navigateToNextScreen(BuildContext context, Widget nextScreen) {
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = Offset(1.0, 0.0);
+          var end = Offset.zero;
+          var curve = Curves.easeInOut;
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
     );
   }
