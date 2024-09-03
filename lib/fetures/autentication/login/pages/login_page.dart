@@ -6,11 +6,13 @@ import 'dart:convert';
 import '../../../../authentication_repository.dart';
 import '../../../home/pages/main_page.dart';
 import '../../otp/pages/otp_page.dart';
+import 'package:delivery_app/utils/colors.dart';
 
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
+
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -22,10 +24,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange,
-        title: Text('Login', style: TextStyle(color: Colors.white)),
+        backgroundColor: primaryColor,
+        title: Text('Login', style: TextStyle(color: primaryTextColor)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
                 Text(
                   'Hello Delivery',
                   style: TextStyle(
-                    color: Colors.deepOrange,
+                    color: primaryColor,
                     fontSize: 80,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
@@ -48,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
                 Text(
                   'Login with your phone number to use the app',
                   style: TextStyle(
-                    color: Colors.deepOrange,
+                    color: primaryColor,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -60,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     hintText: 'Enter Phone Number',
                     filled: true,
-                    fillColor: Colors.grey[100],
+                    fillColor: inputFieldColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(50),
                       borderSide: BorderSide.none,
@@ -84,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text('$_countryFlag $_selectedCountryCode'),
-                            Icon(Icons.arrow_drop_down, color: Colors.grey),
+                            Icon(Icons.arrow_drop_down, color: greyColor),
                           ],
                         ),
                       ),
@@ -99,10 +101,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 20),
                 _isLoading
-                    ? CircularProgressIndicator(color: Colors.deepOrange,)
+                    ? CircularProgressIndicator(color: loadingIndicatorColor)
                     : ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepOrange,
+                    backgroundColor: primaryColor,
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
@@ -112,13 +114,13 @@ class _LoginPageState extends State<LoginPage> {
                       _verifyPhoneNumber(context);
                     }
                   },
-                  child: Text('Submit', style: TextStyle(color: Colors.white)),
+                  child: Text('Submit', style: TextStyle(color: primaryTextColor)),
                 ),
                 SizedBox(height: 30),
                 Text(
                   'If you\'re experiencing issues logging in, please don\'t hesitate to contact us on ----.',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: secondaryTextColor,
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
                   ),

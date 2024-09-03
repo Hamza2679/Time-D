@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:delivery_app/utils/colors.dart';
 
 class SplashScreen extends StatelessWidget {
   final String imagePath;
@@ -24,10 +25,10 @@ class SplashScreen extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
         child: AppBar(
-          backgroundColor: Colors.deepOrange,
+          backgroundColor: primaryColor,
           title: Text(
             'Hello Delivery',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: primaryTextColor),
           ),
           elevation: 0,
         ),
@@ -71,11 +72,27 @@ class SplashScreen extends StatelessWidget {
                 children: [
                   TextButton.icon(
                     onPressed: onNext,
-
-                    icon: Icon(Icons.navigate_next, color: Colors.deepOrange),
+                    icon: Icon(Icons.navigate_next, color: primaryColor),
                     label: Text(
                       'next',
-                      style: TextStyle(color: Colors.deepOrange, fontSize: 16),
+                      style: TextStyle(color: primaryColor, fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: onNext,
+
+                    icon: Icon(Icons.navigate_next, color: primaryColor),
+                    label: Text(
+                      'next',
+                      style: TextStyle(color: primaryColor, fontSize: 16),
                     ),
                   ),
                 ],
@@ -90,9 +107,9 @@ class SplashScreen extends StatelessWidget {
                     onPressed: onSkip,
                     label: Text(
                       'Skip',
-                      style: TextStyle(color: Colors.deepOrange, fontSize: 16),
+                      style: TextStyle(color: primaryColor, fontSize: 16),
                     ),
-                    icon: Icon(Icons.fast_forward, color: Colors.deepOrange),
+                    icon: Icon(Icons.fast_forward, color: primaryColor),
                   ),
                 ],
               ),
@@ -109,7 +126,7 @@ class SplashScreen extends StatelessWidget {
       height: 10,
       width: 10,
       decoration: BoxDecoration(
-        color: currentPage == index ? Colors.deepOrange : Colors.grey,
+        color: currentPage == index ? primaryColor : greyColor,
         shape: BoxShape.circle,
       ),
     );
