@@ -4,8 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'dart:async';
-import 'fetures/home/pages/main_page.dart';
-import 'fetures/splash_screen/pages/custom.dart';
+import '../fetures/home/pages/main_page.dart';
+import '../fetures/splash_screen/pages/custom.dart';
 
 class AuthenticationRepository extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
-import '../../../../authentication_repository.dart';
+import '../../../../utils/authentication_repository.dart';
 import '../../../home/pages/main_page.dart';
 import '../../otp/pages/otp_page.dart';
 import 'package:delivery_app/utils/colors.dart';

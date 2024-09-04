@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'authentication_repository.dart';
+import 'utils/authentication_repository.dart';
 import 'fetures/autentication/login/bloc/login_bloc.dart';
 import 'fetures/autentication/otp/bloc/otp_bloc.dart';
 import 'fetures/home/bloc/home_bloc.dart';

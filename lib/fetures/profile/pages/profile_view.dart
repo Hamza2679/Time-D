@@ -6,7 +6,7 @@ import 'package:delivery_app/fetures/profile/options/setting/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import '../../../authentication_repository.dart';
+import '../../../utils/authentication_repository.dart';
 import '../../autentication/login/pages/login_page.dart';
 import '../bloc/profile_bloc.dart';
 import '../options/edit_profile/pages/edit_profile_page.dart';
