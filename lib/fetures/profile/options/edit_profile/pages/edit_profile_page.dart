@@ -1,11 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:permission_handler/permission_handler.dart' as permissionHandler;
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class EditProfileView extends StatefulWidget {
   @override
@@ -18,26 +15,24 @@ class _EditProfileViewState extends State<EditProfileView> {
   final _addressController = TextEditingController();
   File? _profileImage;
   LatLng? _selectedLocation;
+  SharedPreferences? _prefs;
 
-  String? _phoneNumber;
   @override
   void initState() {
     super.initState();
-    requestPermissions();
-    _fetchPhoneNumber();
-
+    _loadProfileData();
   }
 
-  Future<void> _fetchPhoneNumber() async {
-    User? user = FirebaseAuth.instance.currentUser;
+  Future<void> _loadProfileData() async {
+    _prefs = await SharedPreferences.getInstance();
     setState(() {
-      _phoneNumber = user?.phoneNumber ?? 'No phone number';
+      _fullNameController.text = _prefs?.getString('fullName') ?? '';
+      _addressController.text = _prefs?.getString('address') ?? '';
+      String? profileImagePath = _prefs?.getString('profileImage');
+      if (profileImagePath != null) {
+        _profileImage = File(profileImagePath);
+      }
     });
-  }
-  Future<void> requestPermissions() async {
-    await permissionHandler.Permission.camera.request();
-    await permissionHandler.Permission.storage.request();
-    await permissionHandler.Permission.location.request();
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -55,27 +50,31 @@ class _EditProfileViewState extends State<EditProfileView> {
     }
   }
 
-  void _openMap() async {
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => MapSelectionScreen(
-          initialLocation: _selectedLocation,
-        ),
-      ),
-    );
-
-    if (result != null && result is LatLng) {
-      setState(() {
-        _selectedLocation = result;
-        _addressController.text =
-        'Lat: ${result.latitude}, Lng: ${result.longitude}';
-      });
-    }
+  void _removeImage() async {
+    setState(() {
+      _profileImage = null;
+    });
+    await _prefs?.remove('profileImage');
   }
 
-  void saveProfile() {
+  Future<void> _fetchCurrentLocation() async {
+    LatLng simulatedLocation = LatLng(9.025, 38.7469);
+    setState(() {
+      _selectedLocation = simulatedLocation;
+      _addressController.text = 'Current Address: (${simulatedLocation.latitude}, ${simulatedLocation.longitude})';
+    });
+  }
+
+  Future<void> saveProfile() async {
     if (_formKey.currentState?.validate() ?? false) {
-      Navigator.pop(context);
+      await _prefs?.setString('fullName', _fullNameController.text);
+      await _prefs?.setString('address', _addressController.text);
+      if (_profileImage != null) {
+        await _prefs?.setString('profileImage', _profileImage!.path);
+      } else {
+        await _prefs?.remove('profileImage');
+      }
+      Navigator.pop(context, true);
     }
   }
 
@@ -83,20 +82,21 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor:Colors.deepOrange,
-        title: Text('Edit Profile' ,style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.deepOrange,
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-
         child: Form(
-
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
-
               children: [
-                Text("Select profile",
+                Text(
+                  "Select profile",
                   style: TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 SizedBox(height: 15),
@@ -110,24 +110,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                         ? FileImage(_profileImage!)
                         : null,
                     child: _profileImage == null
-                        ? Icon(Icons.camera_alt, size: 40,color: Colors.black,)
+                        ? Icon(Icons.camera_alt, size: 40, color: Colors.black)
                         : null,
                   ),
-
-                ),
-
-                SizedBox(height: 20),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.phone, color: Colors.orange),
-                    SizedBox(width: 5),
-                    Text(
-                      _phoneNumber ?? 'No phone number',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  ],
                 ),
                 SizedBox(height: 20),
                 TextFormField(
@@ -150,8 +135,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                     labelText: 'Address',
                     border: OutlineInputBorder(),
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.location_on_rounded , color: Colors.deepOrange),
-                      onPressed: _openMap,
+                      icon: Icon(Icons.location_on_rounded,
+                          color: Colors.deepOrange),
+                      onPressed: _fetchCurrentLocation,
                     ),
                   ),
                   validator: (value) {
@@ -163,10 +149,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.deepOrange, // Text color
+                    backgroundColor: Colors.deepOrange,
                   ),
                   onPressed: () {
                     saveProfile();
@@ -180,8 +165,6 @@ class _EditProfileViewState extends State<EditProfileView> {
       ),
     );
   }
-
-
 
   void _showImageSourceSelection(BuildContext context) {
     showModalBottomSheet(
@@ -206,50 +189,19 @@ class _EditProfileViewState extends State<EditProfileView> {
                   _pickImage(ImageSource.camera);
                 },
               ),
+              if (_profileImage != null)
+                ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text('Remove'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _removeImage();
+                  },
+                ),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class MapSelectionScreen extends StatelessWidget {
-  final LatLng? initialLocation;
-
-  MapSelectionScreen({this.initialLocation});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Location'),
-      ),
-      body: FlutterMap(
-        options: MapOptions(
-          center: initialLocation ?? LatLng(0, 0),  // Set initial map center
-          zoom: 13.0,
-          onTap: (tapPosition, point) {
-            Navigator.of(context).pop(point);
-          },
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
-          ),
-          if (initialLocation != null)
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: initialLocation!,
-                  builder: (ctx) =>
-                      Icon(Icons.location_on, color: Colors.red),
-                ),
-              ],
-            ),
-        ],
-      ),
     );
   }
 }
