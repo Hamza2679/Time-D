@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../models/electronics_model.dart';
@@ -17,8 +18,8 @@ class ElectronicsDetailPage extends StatelessWidget {
       create: (context) => ElectronicsDetailBloc(store),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.deepOrange,
-          title: Text(store.name, style: TextStyle(color: Colors.white)),
+          backgroundColor: primaryColor,
+          title: Text(store.name, style: TextStyle(color: primaryTextColor)),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -76,7 +77,7 @@ class ElectronicsDetailPage extends StatelessWidget {
                                     children: [
                                       _buildQuantityButton(
                                         icon: Icons.remove,
-                                        color: Colors.red,
+                                        color: redColor,
                                         onPressed: () {
                                           context.read<ElectronicsDetailBloc>().add(UpdateQuantityEvent(item.name, -1));
                                         },
@@ -87,7 +88,7 @@ class ElectronicsDetailPage extends StatelessWidget {
                                       ),
                                       _buildQuantityButton(
                                         icon: Icons.add,
-                                        color: Colors.green,
+                                        color: greenColor,
                                         onPressed: () {
                                           context.read<ElectronicsDetailBloc>().add(UpdateQuantityEvent(item.name, 1));
                                         },
@@ -109,7 +110,7 @@ class ElectronicsDetailPage extends StatelessWidget {
                 builder: (context, state) {
                   if (state is ElectronicsDetailInitial) {
                     return Container(
-                      color: Colors.deepOrange,
+                      color: primaryColor,
                       padding: EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,13 +120,13 @@ class ElectronicsDetailPage extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: primaryTextColor,
                             ),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.deepOrange,
-                              backgroundColor: Colors.white,
+                              foregroundColor: primaryColor,
+                              backgroundColor: primaryTextColor,
                             ),
                             onPressed: () {
                               showDialog(
@@ -185,7 +186,7 @@ class ElectronicsDetailPage extends StatelessWidget {
       child: IconButton(
         padding: EdgeInsets.zero,
         iconSize: 18,
-        icon: Icon(icon, color: Colors.white),
+        icon: Icon(icon, color: primaryTextColor),
         onPressed: onPressed,
       ),
     );

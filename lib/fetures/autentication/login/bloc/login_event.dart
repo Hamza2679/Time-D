@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart'; // Add this import
+import 'package:flutter/material.dart';
 
 abstract class LoginEvent extends Equatable {
   const LoginEvent();

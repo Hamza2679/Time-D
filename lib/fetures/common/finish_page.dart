@@ -1,16 +1,17 @@
 import 'package:delivery_app/fetures/home/pages/main_page.dart';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class FinishPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: primaryTextColor,
         appBar: PreferredSize(
         preferredSize: Size.fromHeight(50.0),
     child: AppBar(
-    backgroundColor: Colors.deepOrange,
-    title: Text("Hello Delivery", style: TextStyle(color: Colors.white)),
+    backgroundColor: primaryColor,
+    title: Text("Hello Delivery", style: TextStyle(color: primaryTextColor)),
     ),
         ),
       body: Center(
@@ -35,7 +36,7 @@ class FinishPage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey,
+                color: greyColor,
               ),
             ),
             SizedBox(height: 30),
@@ -45,9 +46,9 @@ class FinishPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => MainPage()),
                       (Route<dynamic> route) => false,);
               },
-              child: Text('Back To Home' ,style: TextStyle(color: Colors.white),),
+              child: Text('Back To Home' ,style: TextStyle(color: primaryTextColor),),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepOrange,
+                backgroundColor: primaryColor,
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 textStyle: TextStyle(
                   fontSize: 16,

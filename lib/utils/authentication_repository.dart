@@ -42,7 +42,7 @@ class AuthenticationRepository extends GetxService {
       }
     }
 
-    user == null ? Get.offAll(() => SplashScreen1()) : Get.offAll(() => MainPage());
+    user == null ? Get.offAll(() => MainPage()) : Get.offAll(() => MainPage());
   }
 
   Future<void> saveToken(String token) async {

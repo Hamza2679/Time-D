@@ -1,4 +1,5 @@
 import 'package:delivery_app/fetures/home/pages/main_page.dart';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,8 +20,8 @@ class OtpVerificationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange,
-        title: Text('OTP Verification', style: TextStyle(color: Colors.white)),
+        backgroundColor: primaryColor,
+        title: Text('OTP Verification', style: TextStyle(color: primaryTextColor)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -30,7 +31,7 @@ class OtpVerificationPage extends StatelessWidget {
             Text(
               'Enter the OTP',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 25, color: Colors.deepOrange, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 25, color: primaryColor, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
             Row(
@@ -90,13 +91,13 @@ class OtpVerificationPage extends StatelessWidget {
                   }
                   return ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
+                      backgroundColor: primaryColor,
                     ),
                     onPressed: () {
                       String otp = _otpControllers.map((controller) => controller.text).join();
                       context.read<OtpBloc>().add(VerifyOtp(verificationId, otp));
                     },
-                    child: Text('Verify OTP', style: TextStyle(color: Colors.white)),
+                    child: Text('Verify OTP', style: TextStyle(color: primaryTextColor)),
                   );
                 },
               ),
@@ -108,7 +109,7 @@ class OtpVerificationPage extends StatelessWidget {
               },
               child: Text(
                 "Didn't receive code? Resend",
-                style: TextStyle(color: Colors.deepOrange),
+                style: TextStyle(color: primaryColor),
               ),
             ),
           ],

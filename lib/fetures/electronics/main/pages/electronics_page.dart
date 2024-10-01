@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import '../../../../repositories/electronics_data.dart';
 import '../../electronics_detail/pages/electronics_detail_page.dart';
@@ -19,7 +20,7 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.orangeAccent, Colors.deepOrange],
+              colors: [newColor, primaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -42,7 +43,7 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: primaryTextColor,
               ),
             ),
           ),
@@ -105,7 +106,7 @@ class _ElectronicsPageState extends State<ElectronicsPage> {
                           Text(
                             store.location,
                             style: TextStyle(
-                              color: Colors.grey,
+                              color: greyColor,
                               fontSize: 14.0,
                             ),
                           ),

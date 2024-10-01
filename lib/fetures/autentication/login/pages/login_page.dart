@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String _selectedCountryCode = '+251';
   String _countryFlag = '🇪🇹';
-  bool _isLoading = false; // Add a loading state
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       setState(() {
-                        _isLoading = true; // Start loading
+                        _isLoading = true;
                       });
                       _verifyPhoneNumber(context);
                     }
@@ -142,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
         await FirebaseAuth.instance.signInWithCredential(credential);
         _setLoginState();
         setState(() {
-          _isLoading = false; // Stop loading
+          _isLoading = false;
         });
         Get.offAll(() => MainPage());
       },
@@ -150,8 +150,12 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to verify phone number: ${e.message}')));
+        print("Verification failed: ${e.message}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to verify phone number: ${e.message}')),
+        );
       },
+
       codeSent: (String verificationId, int? resendToken) {
         setState(() {
           _isLoading = false;
