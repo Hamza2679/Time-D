@@ -1,4 +1,5 @@
 import 'package:delivery_app/fetures/notification/notification_page.dart';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../repositories/category_data.dart';
@@ -30,7 +31,7 @@ class MainPage extends StatelessWidget {
               appBar: PreferredSize(
                 preferredSize: Size.fromHeight(5.0),
                 child: AppBar(
-                  backgroundColor: Colors.deepOrange,
+                  backgroundColor: primaryColor,
                 ),
               ),
               body: Column(
@@ -70,7 +71,7 @@ class MainPage extends StatelessWidget {
                                   child: Container(
                                     padding: EdgeInsets.all(0),
                                     decoration: BoxDecoration(
-                                      color: Colors.red.shade900,
+                                      color: redColor,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     constraints: BoxConstraints(
@@ -90,7 +91,7 @@ class MainPage extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.category,
-                            color: Colors.black,
+                            color: secondaryTextColor,
                             size: 28,
                           ),
                           SizedBox(width: 8),
@@ -101,7 +102,7 @@ class MainPage extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               foreground: Paint()
                                 ..shader = LinearGradient(
-                                  colors: <Color>[Colors.black, Colors.black],
+                                  colors: <Color>[secondaryTextColor,  secondaryTextColor],
                                 ).createShader(
                                     Rect.fromLTWH(0.0, 0.0, 200.0, 70.0)),
                               shadows: [
@@ -149,7 +150,7 @@ class MainPage extends StatelessWidget {
                   ),
                 ],
                 currentIndex: state.selectedIndex,
-                selectedItemColor: Colors.deepOrange,
+                selectedItemColor: primaryColor,
                 onTap: (index) {
                   BlocProvider.of<MainBloc>(context).add(ItemTapped(index));
                 },

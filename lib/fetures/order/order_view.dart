@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/order_model.dart';
@@ -64,7 +65,7 @@ class _OrderViewState extends State<OrderView> {
           ? Center(
         child: Text(
           'No items in your order.',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
+          style: TextStyle(fontSize: 18, color: greyColor),
         ),
       )
           : Padding(
@@ -132,12 +133,12 @@ class _OrderViewState extends State<OrderView> {
                           removeOrder(restaurantName);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red, // Background color
+                          backgroundColor: redColor, // Background color
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text('cancel' , style: TextStyle(color: Colors.white),),
+                        child: Text('cancel' , style: TextStyle(color: primaryTextColor),),
                       ),
                     ),
                   ],

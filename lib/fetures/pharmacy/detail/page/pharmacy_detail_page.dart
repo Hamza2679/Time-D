@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import '../../../../models/pharmacy_model.dart';
 import '../../../common/finish_page.dart';
@@ -19,8 +20,8 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange,
-        title: Text(widget.pharmacy.name, style: TextStyle(color: Colors.white)),
+        backgroundColor: primaryColor,
+        title: Text(widget.pharmacy.name, style: TextStyle(color: primaryTextColor)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -92,7 +93,7 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
       children: [
         _buildQuantityButton(
           icon: Icons.remove,
-          color: Colors.red,
+          color: redColor,
           onPressed: () {
             setState(() {
               if (quantity > 0) {
@@ -109,7 +110,7 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
         SizedBox(width: 8),
         _buildQuantityButton(
           icon: Icons.add,
-          color: Colors.green,
+          color: greenColor,
           onPressed: () {
             setState(() {
               _quantities[index] = ++quantity;
@@ -135,7 +136,7 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
       child: IconButton(
         padding: EdgeInsets.zero,
         iconSize: 18,
-        icon: Icon(icon, color: Colors.white),
+        icon: Icon(icon, color: primaryTextColor),
         onPressed: onPressed,
       ),
     );
@@ -148,19 +149,19 @@ class _PharmacyDetailPageState extends State<PharmacyDetailPage> {
     });
 
     return Container(
-      color: Colors.deepOrange,
+      color: primaryColor,
       padding: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             "Total: \$${totalPrice.toStringAsFixed(2)}",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primaryTextColor),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.deepOrange,
-              backgroundColor: Colors.white, // Text color
+              foregroundColor: primaryColor,
+              backgroundColor: primaryTextColor, // Text color
             ),
             onPressed: () {
               showDialog(

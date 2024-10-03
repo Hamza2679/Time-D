@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import '../../models/notification_model.dart';
 import '../../repositories/notification_data.dart';
@@ -32,8 +33,8 @@ class _NotificationPageState extends State<NotificationPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notifications" , style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.deepOrange,
+        title: Text("Notifications" , style: TextStyle(color: primaryTextColor),),
+        backgroundColor: primaryColor,
       ),
       body: ListView.builder(
         itemCount: groupedNotifications.length,
@@ -112,7 +113,7 @@ class _NotificationTileState extends State<NotificationTile> {
             trailing: IconButton(
               icon: Icon(
                 _isExpanded ? Icons.expand_less : Icons.expand_more,
-                color: Colors.orangeAccent,
+                color: newColor,
               ),
               onPressed: () {
                 setState(() {

@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class SparePartPage extends StatelessWidget {
@@ -10,7 +11,7 @@ class SparePartPage extends StatelessWidget {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.orangeAccent, Colors.deepOrange],
+              colors: [newColor, primaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -33,7 +34,7 @@ class SparePartPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: primaryTextColor,
               ),
             ),
           ),

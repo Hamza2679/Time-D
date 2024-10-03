@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomSplashScreen extends StatelessWidget {
@@ -36,7 +37,7 @@ class CustomSplashScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
-                CircularProgressIndicator(color: Colors.deepOrange,),
+                CircularProgressIndicator(color: primaryColor,),
               ],
             ),
           ),

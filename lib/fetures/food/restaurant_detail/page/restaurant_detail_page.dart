@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../models/order_model.dart';
@@ -29,8 +30,8 @@ class RestaurantDetailPage extends StatelessWidget {
         ..add(LoadMenu()),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.deepOrange,
-          title: Text(name, style: TextStyle(color: Colors.white)),
+          backgroundColor: primaryColor,
+          title: Text(name, style: TextStyle(color: primaryTextColor)),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -47,7 +48,7 @@ class RestaurantDetailPage extends StatelessWidget {
               Text(name,
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
               SizedBox(height: 2),
-              Text(address, style: TextStyle(fontSize: 16, color: Colors.grey)),
+              Text(address, style: TextStyle(fontSize: 16, color: greyColor)),
               SizedBox(height: 2),
               Text('Menu',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -86,7 +87,7 @@ class RestaurantDetailPage extends StatelessWidget {
                                   children: [
                                     buildQuantityButton(
                                       icon: Icons.remove,
-                                      color: Colors.red,
+                                      color: redColor,
                                       size: 20, // Smaller icon size
                                       onPressed: () {
                                         context.read<RestaurantBloc>().add(
@@ -102,7 +103,7 @@ class RestaurantDetailPage extends StatelessWidget {
                                     SizedBox(width: 2,),
                                     buildQuantityButton(
                                       icon: Icons.add,
-                                      color: Colors.green,
+                                      color: greenColor,
                                       size: 20,
                                       onPressed: () {
                                         context.read<RestaurantBloc>().add(
@@ -128,7 +129,7 @@ class RestaurantDetailPage extends StatelessWidget {
                     return Container(
                       padding: EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        color: Colors.deepOrange,
+                        color: primaryColor,
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: Row(
@@ -138,12 +139,12 @@ class RestaurantDetailPage extends StatelessWidget {
                             "Total: \$${state.totalPrice.toStringAsFixed(2)}",
                             style: TextStyle(fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white),
+                                color: primaryTextColor),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.deepOrange,
-                              backgroundColor: Colors.white,
+                              foregroundColor: primaryColor,
+                              backgroundColor: primaryColor,
                               padding: EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 12.0),
                               shape: RoundedRectangleBorder(
@@ -177,7 +178,7 @@ class RestaurantDetailPage extends StatelessWidget {
                                     ),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: Text("OK", style: TextStyle(color: Colors.deepOrange)),
+                                        child: Text("OK", style: TextStyle(color: primaryColor)),
                                         onPressed: () {
                                           Navigator.push(context, MaterialPageRoute(builder: (context)=>FinishPage()));
                                         },

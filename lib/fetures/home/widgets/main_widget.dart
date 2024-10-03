@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import '../../../models/book_model.dart';
 import '../../../models/electronics_model.dart';
@@ -53,8 +54,8 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isSelected
-                      ? [Colors.deepOrange, Colors.orangeAccent]
-                      : [Colors.white, Colors.grey],
+                      ? [primaryColor, newColor]
+                      : [primaryTextColor, greyColor],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -84,7 +85,7 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
                   Text(
                     category['text'],
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: isSelected ? primaryTextColor: secondaryTextColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -105,7 +106,7 @@ Widget buildSearchResults(String category, List<dynamic> items) {
     return Center(
       child: Text(
         'No data found',
-        style: TextStyle(fontSize: 18, color: Colors.grey),
+        style: TextStyle(fontSize: 18, color: greyColor),
       ),
     );
   }

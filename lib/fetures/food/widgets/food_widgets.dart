@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import '../restaurant_detail/page/restaurant_detail_page.dart';
 
@@ -54,7 +55,7 @@ Widget buildRestaurants(BuildContext context, List<Map<String, dynamic>> restaur
                   restaurants[index]["address"] ?? "No address available",
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey,
+                    color: greyColor,
                   ),
                 ),
               ),
@@ -78,7 +79,7 @@ Widget buildQuantityButton({required IconData icon, required Color color, requir
     child: IconButton(
       padding: EdgeInsets.zero,
       iconSize: 32,
-      icon: Icon(icon, color: Colors.white),
+      icon: Icon(icon, color: primaryTextColor),
       onPressed: onPressed,
     ),
   );
