@@ -15,10 +15,11 @@ import 'fetures/splash_screen/pages/custom.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  Get.put(AuthenticationRepository());
+  await Get.putAsync<AuthenticationRepository>(() async => AuthenticationRepository());
   runApp(MyApp());
 }
+
+
 
 class MyApp extends StatelessWidget {
   @override

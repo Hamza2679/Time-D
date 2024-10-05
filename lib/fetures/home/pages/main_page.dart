@@ -92,26 +92,14 @@ class MainPage extends StatelessWidget {
                           Icon(
                             Icons.category,
                             color: secondaryTextColor,
-                            size: 28,
+                            size: 14,
                           ),
                           SizedBox(width: 8),
                           Text(
                             'Categories',
                             style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              foreground: Paint()
-                                ..shader = LinearGradient(
-                                  colors: <Color>[secondaryTextColor,  secondaryTextColor],
-                                ).createShader(
-                                    Rect.fromLTWH(0.0, 0.0, 200.0, 70.0)),
-                              shadows: [
-                                Shadow(
-                                  offset: Offset(2.0, 2.0),
-                                  blurRadius: 3.0,
-                                  color: Colors.black.withOpacity(0.3),
-                                ),
-                              ],
+                              fontSize: 16,
+                              fontWeight:FontWeight.bold,
                             ),
                           ),
                         ],

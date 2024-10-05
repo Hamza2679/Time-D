@@ -1,56 +1,50 @@
+import 'package:delivery_app/fetures/home/pages/main_page.dart';
 import 'package:delivery_app/fetures/splash_screen/pages/splash_screen1.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
-import 'package:jwt_decode/jwt_decode.dart';
-import 'dart:async';
-import '../fetures/home/pages/main_page.dart';
-import '../fetures/splash_screen/pages/custom.dart';
 
 class AuthenticationRepository extends GetxService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
-  late final Rx<User?> firebaseUser;
+  RxBool isLoggedIn = false.obs;
 
   static AuthenticationRepository get instance => Get.find();
 
   @override
-  void onReady() {
-    super.onReady();
-    firebaseUser = Rx<User?>(_auth.currentUser);
-    firebaseUser.bindStream(_auth.userChanges());
-    ever(firebaseUser, _setInitialScreen);
+  void onInit() {
+    super.onInit();
+    _checkAuthenticationStatus();
   }
 
-  _setInitialScreen(User? user) async {
-
-    Get.offAll(() => CustomSplashScreen());
-
+  Future<void> _checkAuthenticationStatus() async {
     await Future.delayed(Duration(seconds: 1));
-
-    String? token = await _storage.read(key: 'authToken');
-    if (token != null) {
-      Map<String, dynamic> payload = Jwt.parseJwt(token);
-      int expiryTime = payload['exp'] * 1000;
-      int currentTime = DateTime.now().millisecondsSinceEpoch;
-
-      if (currentTime < expiryTime) {
-        Get.offAll(() => MainPage());
-        return;
-      } else {
-        await _storage.delete(key: 'authToken');
-      }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('accessToken');
+    if (token != null && token.isNotEmpty) {
+      isLoggedIn.value = true;
+      Get.offAll(() => MainPage());
+    } else {
+      isLoggedIn.value = false;
+      Get.offAll(() => SplashScreen1());
     }
-
-    user == null ? Get.offAll(() => MainPage()) : Get.offAll(() => MainPage());
   }
 
-  Future<void> saveToken(String token) async {
-    await _storage.write(key: 'authToken', value: token);
+  Future<void> saveUserData(String token, Map<String, dynamic> user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('accessToken', token);
+    await prefs.setString('userId', user['id'] ?? '');
+    await prefs.setString('phone', user['phone'] ?? '');
+    await prefs.setString('email', user['email'] ?? '');
+    await prefs.setString('firstName', user['firstName'] ?? '');
+    await prefs.setString('lastName', user['lastName'] ?? '');
+    await prefs.setString('profileImage', user['profileImage'] ?? '');
+
+    isLoggedIn.value = true;
+    Get.offAll(() => MainPage());
   }
 
   Future<void> logout() async {
-    await _storage.delete(key: 'authToken');
-    await _auth.signOut();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    isLoggedIn.value = false;
+    Get.offAll(() => SplashScreen1());
   }
 }

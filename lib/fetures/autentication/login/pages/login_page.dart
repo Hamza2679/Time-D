@@ -1,187 +1,241 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:country_picker/country_picker.dart';
-import 'package:get/get.dart';
 import 'dart:convert';
-import '../../../../utils/authentication_repository.dart';
-import '../../../home/pages/main_page.dart';
-import '../../otp/pages/otp_page.dart';
-import 'package:delivery_app/utils/colors.dart';
+import 'package:delivery_app/fetures/autentication/signUp/pages/signup_page.dart';
+import 'package:delivery_app/fetures/home/pages/main_page.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:country_picker/country_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _phoneNumberController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
-  String _selectedCountryCode = '+251';
-  String _countryFlag = '🇪🇹';
-  bool _isLoading = false;
+  final _emailController = TextEditingController();
+  final _emailPasswordController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _phonePasswordController = TextEditingController();
+  String _selectedCountryCode = '+251'; // Default country code (Ethiopia)
+  String _countryFlag = '🇪🇹'; // Default country flag (Ethiopia)
+  final String baseUrl = 'https://hello-delivery.onrender.com/api/v1';
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  InputDecoration _inputDecoration(String hintText) {
+    return InputDecoration(
+      hintText: hintText,
+      filled: true,
+      fillColor: Colors.grey[200],
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(50),
+        borderSide: BorderSide.none,
+      ),
+    );
+  }
+
+
+  Future<void> _loginWithEmail() async {
+    final email = _emailController.text;
+    final password = _emailPasswordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _showError('Please fill in both fields.');
+      return;
+    }
+
+    final url = Uri.parse('$baseUrl/auth/login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        final responseBody = json.decode(response.body);
+
+        // Extracting access_token and user details from the response
+        final accessToken = responseBody['access_token'] as String?;
+        final user = responseBody['user'] as Map<String, dynamic>?;
+
+        if (accessToken == null || user == null) {
+          _showError('Invalid response from server. Please try again.');
+          return;
+        }
+
+        // Save access token and user info in shared preferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('accessToken', accessToken);
+        await prefs.setString('userId', user['id'] ?? '');
+        await prefs.setString('phone', user['phone'] ?? '');
+        await prefs.setString('email', user['email'] ?? '');
+        await prefs.setString('firstName', user['firstName'] ?? '');
+        await prefs.setString('lastName', user['lastName'] ?? '');
+        await prefs.setString('profileImage', user['profileImage'] ?? '');
+
+        // Navigate to the main page
+        Get.offAll(() => MainPage());
+      } else {
+        final responseBody = json.decode(response.body);
+        _showError(responseBody['message'] ?? 'Login failed. Please try again.');
+      }
+    } catch (error, stackTrace) {
+      print("Error: $error");
+      print("StackTrace: $stackTrace");
+      _showError('An error occurred. Please check your internet connection and try again.');
+    }
+  }
+
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: primaryColor,
-        title: Text('Login', style: TextStyle(color: primaryTextColor)),
+        title: Text('Login'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                Text(
-                  'Hello Delivery',
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 80,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                SizedBox(height: 50),
-                Text(
-                  'Login with your phone number to use the app',
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _phoneNumberController,
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Phone Number',
-                    filled: true,
-                    fillColor: inputFieldColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(50),
-                      borderSide: BorderSide.none,
-                    ),
-                    prefixIcon: GestureDetector(
-                      onTap: () {
-                        showCountryPicker(
-                          context: context,
-                          showPhoneCode: true,
-                          onSelect: (Country country) {
-                            setState(() {
-                              _selectedCountryCode = '+${country.phoneCode}';
-                              _countryFlag = country.flagEmoji;
-                            });
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('$_countryFlag $_selectedCountryCode'),
-                            Icon(Icons.arrow_drop_down, color: greyColor),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                _isLoading
-                    ? CircularProgressIndicator(color: loadingIndicatorColor)
-                    : ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      setState(() {
-                        _isLoading = true;
-                      });
-                      _verifyPhoneNumber(context);
-                    }
-                  },
-                  child: Text('Submit', style: TextStyle(color: primaryTextColor)),
-                ),
-                SizedBox(height: 30),
-                Text(
-                  'If you\'re experiencing issues logging in, please don\'t hesitate to contact us on ----.',
-                  style: TextStyle(
-                    color: secondaryTextColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+        child: Column(
+          children: [
+            SizedBox(height: 60),
+            TabBar(
+              controller: _tabController,
+              indicatorColor: Theme.of(context).primaryColor,
+              labelColor: Theme.of(context).primaryColor,
+              unselectedLabelColor: Colors.grey,
+              tabs: [
+                Tab(text: 'Email Login'),
+                Tab(text: 'Phone Login'),
               ],
             ),
-          ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Email Login Tab
+                  ListView(
+                    children: [
+                      SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: _inputDecoration('Enter Email'),
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _emailPasswordController,
+                        decoration: _inputDecoration('Enter Password'),
+                        obscureText: true,
+                      ),
+                      SizedBox(height: 32.0),
+                      ElevatedButton(
+                        onPressed: _loginWithEmail,
+                        child: Text('Login with Email'),
+                      ),
+                    ],
+                  ),
+                  // Phone Login Tab
+                  ListView(
+                    children: [
+                      SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter Phone Number',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide.none,
+                          ),
+                          prefixIcon: GestureDetector(
+                            onTap: () {
+                              showCountryPicker(
+                                context: context,
+                                showPhoneCode: true,
+                                onSelect: (Country country) {
+                                  setState(() {
+                                    _selectedCountryCode = '+${country.phoneCode}';
+                                    _countryFlag = country.flagEmoji;
+                                  });
+                                },
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text('$_countryFlag $_selectedCountryCode'),
+                                  Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _phonePasswordController,
+                        decoration: _inputDecoration('Enter Password'),
+                        obscureText: true,
+                      ),
+                      SizedBox(height: 32.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Handle phone login logic here
+                          print('Logging in with phone: $_selectedCountryCode ${_phoneController.text}');
+                        },
+                        child: Text('Login with Phone'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16.0),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignUpPage()),
+                );
+              },
+              child: Text(
+                "Don't have an account? Sign Up Here",
+                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  void _verifyPhoneNumber(BuildContext context) async {
-    String phoneNumber = '$_selectedCountryCode${_phoneNumberController.text.trim()}';
-
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        _setLoginState();
-        setState(() {
-          _isLoading = false;
-        });
-        Get.offAll(() => MainPage());
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        setState(() {
-          _isLoading = false;
-        });
-        print("Verification failed: ${e.message}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to verify phone number: ${e.message}')),
-        );
-      },
-
-      codeSent: (String verificationId, int? resendToken) {
-        setState(() {
-          _isLoading = false;
-        });
-        Get.offAll(() => OtpVerificationPage(verificationId: verificationId, phoneNumber: phoneNumber));
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        setState(() {
-          _isLoading = false;
-        });
-      },
-    );
-  }
-
-  void _setLoginState() async {
-    String token = _generateToken();
-    await AuthenticationRepository.instance.saveToken(token);
-    print('Token saved: $token');
-  }
-
-  String _generateToken() {
-    final payload = {
-      'iss': 'delivery_app',
-      'exp': DateTime.now().add(Duration(days: 180)).millisecondsSinceEpoch ~/ 1000
-    };
-    final token = base64UrlEncode(utf8.encode(jsonEncode(payload)));
-    return token;
   }
 }
