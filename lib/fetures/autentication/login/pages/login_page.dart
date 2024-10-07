@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:country_picker/country_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../forgetPassword/pages/forgetPassword_Pages.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -53,7 +55,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     final password = _emailPasswordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      _showError('Please fill in both fields.');
+      _showMessage('Please fill in both fields.',Colors.red);
       return;
     }
 
@@ -72,6 +74,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
 
       if (response.statusCode == 201) {
+        _showMessage('logged in success fully.',Colors.green);
         final responseBody = json.decode(response.body);
 
         // Extracting access_token and user details from the response
@@ -79,7 +82,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         final user = responseBody['user'] as Map<String, dynamic>?;
 
         if (accessToken == null || user == null) {
-          _showError('Invalid response from server. Please try again.');
+          _showMessage('Invalid response from server. Please try again.',Colors.red);
           return;
         }
 
@@ -97,21 +100,30 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         Get.offAll(() => MainPage());
       } else {
         final responseBody = json.decode(response.body);
-        _showError(responseBody['message'] ?? 'Login failed. Please try again.');
+        _showMessage(
+            responseBody['message'] ?? 'Login failed. Please try again.',Colors.red);
       }
     } catch (error, stackTrace) {
       print("Error: $error");
       print("StackTrace: $stackTrace");
-      _showError('An error occurred. Please check your internet connection and try again.');
+      _showMessage(
+          'An error occurred. Please check your internet connection and try again.',Colors.red);
     }
   }
 
 
-  void _showError(String message) {
+  void _showMessage(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+      ),
     );
   }
+
+  @override
+  bool _isEmailPasswordVisible = false;
+  bool _isPhonePasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -150,8 +162,41 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       SizedBox(height: 16.0),
                       TextFormField(
                         controller: _emailPasswordController,
-                        decoration: _inputDecoration('Enter Password'),
-                        obscureText: true,
+                        decoration: _inputDecoration('Enter Password').copyWith(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isEmailPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isEmailPasswordVisible = !_isEmailPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: !_isEmailPasswordVisible,
+                      ),
+                      SizedBox(height: 8.0),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordPage()),
+                            );
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(height: 32.0),
                       ElevatedButton(
@@ -204,14 +249,48 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       SizedBox(height: 16.0),
                       TextFormField(
                         controller: _phonePasswordController,
-                        decoration: _inputDecoration('Enter Password'),
-                        obscureText: true,
+                        decoration: _inputDecoration('Enter Password').copyWith(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPhonePasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPhonePasswordVisible = !_isPhonePasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: !_isPhonePasswordVisible,
+                      ),
+                      SizedBox(height: 8.0),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordPage()),
+                            );
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(height: 32.0),
                       ElevatedButton(
                         onPressed: () {
                           // Handle phone login logic here
-                          print('Logging in with phone: $_selectedCountryCode ${_phoneController.text}');
+                          print(
+                              'Logging in with phone: $_selectedCountryCode ${_phoneController.text}');
                         },
                         child: Text('Login with Phone'),
                       ),
@@ -230,7 +309,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               },
               child: Text(
                 "Don't have an account? Sign Up Here",
-                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -238,4 +319,5 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       ),
     );
   }
+
 }

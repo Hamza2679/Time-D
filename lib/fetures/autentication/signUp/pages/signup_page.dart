@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:delivery_app/fetures/autentication/login/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:permission_handler/permission_handler.dart'; // For permission handling
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -14,17 +17,26 @@ class _SignUpPageState extends State<SignUpPage> {
   String? firstName;
   String? lastName;
   String? email;
-  String? password;
-  String? confirmPassword;
   String? phone;
   File? profileImage;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   final ImagePicker _picker = ImagePicker();
+  final TextEditingController _passwordController = TextEditingController(); // Password controller
+  final TextEditingController _confirmPasswordController = TextEditingController(); // Confirm password controller
   final TextEditingController _phoneNumberController = TextEditingController();
   String _selectedCountryCode = '+251'; // Default country code (Ethiopia)
   String _countryFlag = '🇪🇹'; // Default country flag (Ethiopia)
+  final String baseUrl = 'https://hello-delivery.onrender.com/api/v1';
 
   Future<void> _pickImage() async {
+    // Check permission for gallery access
+    var status = await Permission.photos.status;
+    if (!status.isGranted) {
+      await Permission.photos.request();
+    }
+
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -66,14 +78,85 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  InputDecoration _inputDecoration(String hintText) {
+  InputDecoration _inputDecoration(String hintText, {Widget? suffixIcon}) {
     return InputDecoration(
       hintText: hintText,
       filled: true,
-      fillColor: Colors.grey[200], // Replace inputFieldColor as needed
+      fillColor: Colors.grey[200],
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(50),
         borderSide: BorderSide.none,
+      ),
+      suffixIcon: suffixIcon, // Add suffix icon for password fields
+    );
+  }
+
+
+
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate() || profileImage == null) {
+      return;
+    }
+
+    _formKey.currentState!.save();
+
+    final url = Uri.parse('$baseUrl/auth/register');
+    final request = http.MultipartRequest('POST', url);
+
+    // Add fields as form data
+    request.fields['firstName'] = firstName!;
+    request.fields['lastName'] = lastName!;
+    request.fields['email'] = email!;
+    request.fields['password'] = _passwordController.text; // Use controller text
+    request.fields['phone'] = '$_selectedCountryCode ${_phoneNumberController.text}';
+
+    // Convert profile image to base64 and add it as a form field
+    if (profileImage != null) {
+      final bytes = await File(profileImage!.path).readAsBytes();
+      final base64Image = base64Encode(bytes);
+      final mimeType = 'image/${profileImage!.path.split('.').last}';
+      request.fields['profileImage'] = 'data:$mimeType;base64,$base64Image';
+    }
+
+    // Print request details for debugging
+    print('Request URL: ${request.url}');
+    print('Request Method: ${request.method}');
+    print('Request Headers: ${request.headers}');
+    print('Request Fields: ${request.fields}');
+
+    try {
+      // Send the request
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      // Print response details for debugging
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: $responseBody');
+
+      if (response.statusCode == 201) {
+        _showMessage('Registered successfully', Colors.green);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } else {
+        final responseData = json.decode(responseBody);
+        _showMessage(responseData['message'] ?? 'Registration failed. Please try again.', Colors.red);
+      }
+    } catch (error) {
+      // Print error details for debugging
+      print('Error: $error');
+      _showMessage('An error occurred. Please check your internet connection and try again.', Colors.red);
+    }
+  }
+
+
+
+  void _showMessage(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
       ),
     );
   }
@@ -94,13 +177,20 @@ class _SignUpPageState extends State<SignUpPage> {
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage:
-                  profileImage != null ? FileImage(profileImage!) : null,
-                  child: profileImage == null
-                      ? Icon(Icons.add_a_photo, size: 50)
-                      : null,
+                  backgroundColor: Colors.grey[200], // Add a background color
+                  child: ClipOval(
+                    child: profileImage != null
+                        ? Image.file(
+                      profileImage!,
+                      width: 100, // Make sure the image fits within the avatar
+                      height: 100,
+                      fit: BoxFit.cover,
+                    )
+                        : Icon(Icons.add_a_photo, size: 50),
+                  ),
                 ),
               ),
+
               SizedBox(height: 16.0),
               TextFormField(
                 decoration: _inputDecoration('First Name'),
@@ -130,7 +220,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: InputDecoration(
                   hintText: 'Enter Phone Number',
                   filled: true,
-                  fillColor: Colors.grey[200], // Replace inputFieldColor as needed
+                  fillColor: Colors.grey[200],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50),
                     borderSide: BorderSide.none,
@@ -183,10 +273,23 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
               ),
               SizedBox(height: 16.0),
+              // Password field with eye icon
               TextFormField(
-                decoration: _inputDecoration('Password'),
-                obscureText: true,
-                onSaved: (value) => password = value,
+                controller: _passwordController, // Use controller
+                decoration: _inputDecoration(
+                  'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: _obscurePassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
@@ -198,58 +301,43 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
               ),
               SizedBox(height: 16.0),
+              // Confirm password field with eye icon
               TextFormField(
-                decoration: _inputDecoration('Confirm Password'),
-                obscureText: true,
+                controller: _confirmPasswordController, // Use controller
+                decoration: _inputDecoration(
+                  'Confirm Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: _obscureConfirmPassword,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please confirm your password';
                   }
-                  if (value != password) {
+                  if (value != _passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;
                 },
               ),
-
-              SizedBox(height: 32.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // Handle sign-up logic here
-                    print('First Name: $firstName');
-                    print('Last Name: $lastName');
-                    print('Email: $email');
-                    print('Password: $password');
-                    print(
-                        'Phone: $_selectedCountryCode ${_phoneNumberController.text}');
-                    if (profileImage != null) {
-                      print('Profile Image Path: ${profileImage!.path}');
-                    }
-                  }
-                },
-                child: Text('Sign Up'),
-              ),
               SizedBox(height: 16.0),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LoginPage()),
-                  );
-                },
-                child: Text(
-                  "Don't have an account? Sign Up Here",
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                ),
+              ElevatedButton(
+                onPressed: _register,
+                child: Text('Sign Up'),
               ),
             ],
           ),
-
         ),
-
       ),
     );
   }
