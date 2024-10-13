@@ -21,6 +21,7 @@ class AuthenticationRepository extends GetxService {
     if (token != null && token.isNotEmpty) {
       isLoggedIn.value = true;
       Get.offAll(() => MainPage());
+      print("the token :"+token);
     } else {
       isLoggedIn.value = false;
       Get.offAll(() => SplashScreen1());

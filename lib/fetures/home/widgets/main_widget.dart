@@ -34,7 +34,7 @@ Widget buildCategoryPage(String currentCategory) {
 }
 Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categories, String currentCategory) {
   return Container(
-    height: 150,
+    height: 100,
     child: ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: categories.length,
@@ -49,7 +49,7 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
                   CategoryTapped(category['route']));
             },
             child: Container(
-              width: 130,
+              width: 100,
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -76,8 +76,8 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.asset(
                       category['image'],
-                      width: 130,
-                      height: 80,
+                      width: 80,
+                      height: 48,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -86,7 +86,7 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
                     category['text'],
                     style: TextStyle(
                       color: isSelected ? primaryTextColor: secondaryTextColor,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.bold, fontSize: 13
                     ),
                   ),
                 ],
@@ -215,4 +215,3 @@ Widget buildSearchBar({double height = 56.0, required ValueChanged<String> onCha
     ),
   );
 }
-

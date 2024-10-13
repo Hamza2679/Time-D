@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
-import 'package:permission_handler/permission_handler.dart'; // For permission handling
+import 'package:permission_handler/permission_handler.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -23,15 +23,14 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _obscureConfirmPassword = true;
 
   final ImagePicker _picker = ImagePicker();
-  final TextEditingController _passwordController = TextEditingController(); // Password controller
-  final TextEditingController _confirmPasswordController = TextEditingController(); // Confirm password controller
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-  String _selectedCountryCode = '+251'; // Default country code (Ethiopia)
-  String _countryFlag = '🇪🇹'; // Default country flag (Ethiopia)
+  String _selectedCountryCode = '+251';
+  String _countryFlag = '🇪🇹';
   final String baseUrl = 'https://hello-delivery.onrender.com/api/v1';
 
   Future<void> _pickImage() async {
-    // Check permission for gallery access
     var status = await Permission.photos.status;
     if (!status.isGranted) {
       await Permission.photos.request();
@@ -87,7 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
         borderRadius: BorderRadius.circular(50),
         borderSide: BorderSide.none,
       ),
-      suffixIcon: suffixIcon, // Add suffix icon for password fields
+      suffixIcon: suffixIcon,
     );
   }
 
@@ -103,14 +102,12 @@ class _SignUpPageState extends State<SignUpPage> {
     final url = Uri.parse('$baseUrl/auth/register');
     final request = http.MultipartRequest('POST', url);
 
-    // Add fields as form data
     request.fields['firstName'] = firstName!;
     request.fields['lastName'] = lastName!;
     request.fields['email'] = email!;
-    request.fields['password'] = _passwordController.text; // Use controller text
+    request.fields['password'] = _passwordController.text;
     request.fields['phone'] = '$_selectedCountryCode ${_phoneNumberController.text}';
 
-    // Convert profile image to base64 and add it as a form field
     if (profileImage != null) {
       final bytes = await File(profileImage!.path).readAsBytes();
       final base64Image = base64Encode(bytes);
@@ -118,18 +115,14 @@ class _SignUpPageState extends State<SignUpPage> {
       request.fields['profileImage'] = 'data:$mimeType;base64,$base64Image';
     }
 
-    // Print request details for debugging
     print('Request URL: ${request.url}');
     print('Request Method: ${request.method}');
     print('Request Headers: ${request.headers}');
     print('Request Fields: ${request.fields}');
 
     try {
-      // Send the request
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-
-      // Print response details for debugging
       print('Response Status Code: ${response.statusCode}');
       print('Response Body: $responseBody');
 
@@ -144,7 +137,6 @@ class _SignUpPageState extends State<SignUpPage> {
         _showMessage(responseData['message'] ?? 'Registration failed. Please try again.', Colors.red);
       }
     } catch (error) {
-      // Print error details for debugging
       print('Error: $error');
       _showMessage('An error occurred. Please check your internet connection and try again.', Colors.red);
     }
@@ -177,12 +169,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundColor: Colors.grey[200], // Add a background color
+                  backgroundColor: Colors.grey[200],
                   child: ClipOval(
                     child: profileImage != null
                         ? Image.file(
                       profileImage!,
-                      width: 100, // Make sure the image fits within the avatar
+                      width: 100,
                       height: 100,
                       fit: BoxFit.cover,
                     )
@@ -273,9 +265,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
               ),
               SizedBox(height: 16.0),
-              // Password field with eye icon
               TextFormField(
-                controller: _passwordController, // Use controller
+                controller: _passwordController,
                 decoration: _inputDecoration(
                   'Password',
                   suffixIcon: IconButton(
@@ -301,9 +292,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
               ),
               SizedBox(height: 16.0),
-              // Confirm password field with eye icon
               TextFormField(
-                controller: _confirmPasswordController, // Use controller
+                controller: _confirmPasswordController,
                 decoration: _inputDecoration(
                   'Confirm Password',
                   suffixIcon: IconButton(

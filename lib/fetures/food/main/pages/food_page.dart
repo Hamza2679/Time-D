@@ -14,6 +14,7 @@ class FoodPage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          toolbarHeight: 30.0,
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -46,6 +47,7 @@ class FoodPage extends StatelessWidget {
             ),
           ),
         ),
+
 
         body: Column(
           children: [

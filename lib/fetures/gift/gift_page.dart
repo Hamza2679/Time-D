@@ -8,6 +8,7 @@ class GiftsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        toolbarHeight: 30,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
