@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'package:delivery_app/fetures/autentication/login/pages/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:http/http.dart' as http;
-import 'dart:io';
-import 'package:permission_handler/permission_handler.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -18,64 +15,15 @@ class _SignUpPageState extends State<SignUpPage> {
   String? lastName;
   String? email;
   String? phone;
-  File? profileImage;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  final ImagePicker _picker = ImagePicker();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   String _selectedCountryCode = '+251';
   String _countryFlag = '🇪🇹';
   final String baseUrl = 'https://hello-delivery.onrender.com/api/v1';
-
-  Future<void> _pickImage() async {
-    var status = await Permission.photos.status;
-    if (!status.isGranted) {
-      await Permission.photos.request();
-    }
-
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Wrap(
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Select from Gallery'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  final pickedFile =
-                  await _picker.pickImage(source: ImageSource.gallery);
-                  if (pickedFile != null) {
-                    setState(() {
-                      profileImage = File(pickedFile.path);
-                    });
-                  }
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Take a Picture'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  final pickedFile =
-                  await _picker.pickImage(source: ImageSource.camera);
-                  if (pickedFile != null) {
-                    setState(() {
-                      profileImage = File(pickedFile.path);
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   InputDecoration _inputDecoration(String hintText, {Widget? suffixIcon}) {
     return InputDecoration(
@@ -90,41 +38,37 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-
-
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate() || profileImage == null) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
     _formKey.currentState!.save();
 
     final url = Uri.parse('$baseUrl/auth/register');
-    final request = http.MultipartRequest('POST', url);
 
-    request.fields['firstName'] = firstName!;
-    request.fields['lastName'] = lastName!;
-    request.fields['email'] = email!;
-    request.fields['password'] = _passwordController.text;
-    request.fields['phone'] = '$_selectedCountryCode ${_phoneNumberController.text}';
+    // Constructing the body as a JSON object
+    final requestBody = jsonEncode({
+      "firstName": firstName,
+      "lastName": lastName,
+      "email": email,
+      "password": _passwordController.text,
+      "phone": '$_selectedCountryCode ${_phoneNumberController.text}'.trim(),
+    });
 
-    if (profileImage != null) {
-      final bytes = await File(profileImage!.path).readAsBytes();
-      final base64Image = base64Encode(bytes);
-      final mimeType = 'image/${profileImage!.path.split('.').last}';
-      request.fields['profileImage'] = 'data:$mimeType;base64,$base64Image';
-    }
-
-    print('Request URL: ${request.url}');
-    print('Request Method: ${request.method}');
-    print('Request Headers: ${request.headers}');
-    print('Request Fields: ${request.fields}');
+    print('Request Body: $requestBody');
 
     try {
-      final response = await request.send();
-      final responseBody = await response.stream.bytesToString();
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      );
+
       print('Response Status Code: ${response.statusCode}');
-      print('Response Body: $responseBody');
+      print('Response Body: ${response.body}');
 
       if (response.statusCode == 201) {
         _showMessage('Registered successfully', Colors.green);
@@ -133,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } else {
-        final responseData = json.decode(responseBody);
+        final responseData = json.decode(response.body);
         _showMessage(responseData['message'] ?? 'Registration failed. Please try again.', Colors.red);
       }
     } catch (error) {
@@ -141,7 +85,6 @@ class _SignUpPageState extends State<SignUpPage> {
       _showMessage('An error occurred. Please check your internet connection and try again.', Colors.red);
     }
   }
-
 
 
   void _showMessage(String message, Color color) {
@@ -165,24 +108,6 @@ class _SignUpPageState extends State<SignUpPage> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey[200],
-                  child: ClipOval(
-                    child: profileImage != null
-                        ? Image.file(
-                      profileImage!,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    )
-                        : Icon(Icons.add_a_photo, size: 50),
-                  ),
-                ),
-              ),
-
               SizedBox(height: 16.0),
               TextFormField(
                 decoration: _inputDecoration('First Name'),

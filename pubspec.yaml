@@ -146,6 +146,7 @@ flutter:
     - assets/ScreenShot2.png
     - assets/restaurant5.jpg
     - assets/restaurant6.jpg
+    - assets/All_category.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

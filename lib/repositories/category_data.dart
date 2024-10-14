@@ -1,4 +1,5 @@
 List<Map<String, dynamic>> categories = [
+  {"image": "assets/All_category.png", "text": "All", "route": "/discover"},
   {"image": "assets/food.jpg", "text": "Food", "route": "/food"},
   {"image": "assets/electronics.png", "text": "Electronics", "route": "/electronics"},
   {"image": "assets/pharmacy.jpg", "text": "Pharmacy", "route": "/pharmacy"},

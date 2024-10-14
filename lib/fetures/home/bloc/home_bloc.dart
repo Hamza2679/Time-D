@@ -17,7 +17,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
 
     on<CategoryTapped>((event, emit) {
-      String category = 'Food';
+      String category = 'All'; // Default category is 'All'
+
       switch (event.route) {
         case '/electronics':
           category = 'Electronics';
@@ -34,6 +35,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         case '/books_and_stationery':
           category = 'Books';
           break;
+        case '/food':
+          category = 'Food';
+          break;
+        case '/discover':  // Add the route for "All" category
+          category = 'All';
+          break;
+        default:
+          category = 'All'; // Fallback to 'All' in case of unknown route
       }
       emit((state as MainInitial).copyWith(currentCategory: category, filteredItems: []));
     });

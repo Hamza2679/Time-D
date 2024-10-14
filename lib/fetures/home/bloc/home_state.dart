@@ -15,7 +15,7 @@ class MainInitial extends MainState {
   const MainInitial({
     this.selectedIndex = 0,
     this.searchQuery = '',
-    this.currentCategory = 'Food',
+    this.currentCategory = 'All',
     this.filteredItems = const [],
   });
 

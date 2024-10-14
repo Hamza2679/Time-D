@@ -1,3 +1,4 @@
+import 'package:delivery_app/fetures/home/pages/discover_page.dart';
 import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import '../../../models/book_model.dart';
@@ -28,8 +29,10 @@ Widget buildCategoryPage(String currentCategory) {
       return GiftsPage();
     case 'Books':
       return BooksPage();
-    default:
+    case 'Food':
       return FoodPage();
+    default:
+      return DiscoverPage();
   }
 }
 Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categories, String currentCategory) {
@@ -54,7 +57,7 @@ Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categori
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isSelected
-                      ? [primaryColor, newColor]
+                      ? [primaryColor, secondaryColor]
                       : [primaryTextColor, greyColor],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
