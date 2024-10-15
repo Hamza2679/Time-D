@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:delivery_app/fetures/home/pages/discover_page.dart';
 import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -35,72 +37,111 @@ Widget buildCategoryPage(String currentCategory) {
       return DiscoverPage();
   }
 }
-Widget buildCategories(BuildContext context, List<Map<String, dynamic>> categories, String currentCategory) {
-  return Container(
-    height: 100,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final category = categories[index];
-        bool isSelected = currentCategory == category['text'];
-        return Padding(
-          padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
-          child: GestureDetector(
-            onTap: () {
-              BlocProvider.of<MainBloc>(context).add(
-                  CategoryTapped(category['route']));
-            },
-            child: Container(
-              width: 100,
-              padding: EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: isSelected
-                      ? [primaryColor, secondaryColor]
-                      : [primaryTextColor, greyColor],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+
+Future<List<Map<String, dynamic>>> fetchCategories() async {
+  final response = await http.get(Uri.parse('https://hello-delivery.onrender.com/api/v1/category'));
+
+  if (response.statusCode == 200) {
+    List<dynamic> data = json.decode(response.body);
+
+    List<Map<String, dynamic>> categoriesFromBackend = data.map((category) {
+      return {
+        'image': category['image'],
+        'text': category['name'],
+        'route': '/${category['name'].toLowerCase().replaceAll(' ', '_')}' // Generate route based on category name
+      };
+    }).toList();
+
+    // Prepend the 'All' category
+    categoriesFromBackend.insert(0, {"image": "assets/All_category.png", "text": "All", "route": "/discover"});
+
+    return categoriesFromBackend;
+  } else {
+    throw Exception('Failed to load categories');
+  }
+}
+
+
+Widget buildCategories(BuildContext context, String currentCategory) {
+  return FutureBuilder<List<Map<String, dynamic>>>(
+    future: fetchCategories(), // Call the function to fetch categories
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: CircularProgressIndicator()); // Show a loading indicator while fetching
+      } else if (snapshot.hasError) {
+        return Center(child: Text('Error loading categories')); // Error handling
+      } else if (snapshot.hasData) {
+        List<Map<String, dynamic>> categories = snapshot.data!;
+
+        return Container(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              bool isSelected = currentCategory == category['text'];
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    BlocProvider.of<MainBloc>(context).add(CategoryTapped(category['route']));
+                  },
+                  child: Container(
+                    width: 100,
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: isSelected ? [primaryColor, secondaryColor] : [primaryTextColor, greyColor],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: Offset(0, 4),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            category['image'],
+                            width: 80,
+                            height: 48,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          category['text'],
+                          style: TextStyle(
+                            color: isSelected ? primaryTextColor : secondaryTextColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    offset: Offset(0, 4),
-                    blurRadius: 6,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.asset(
-                      category['image'],
-                      width: 80,
-                      height: 48,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    category['text'],
-                    style: TextStyle(
-                      color: isSelected ? primaryTextColor: secondaryTextColor,
-                      fontWeight: FontWeight.bold, fontSize: 13
-                    ),
-                  ),
-                ],
-              ),
-            ),
+              );
+            },
           ),
         );
-      },
-    ),
+      }
+      return Container(); // Handle an empty state
+    },
   );
 }
+
+
 Widget buildSearchResults(String category, List<dynamic> items) {
   print("Search results called with category: $category and items length: ${items.length}"); // Debug print
 

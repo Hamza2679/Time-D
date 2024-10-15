@@ -47,7 +47,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
     final url = Uri.parse('$baseUrl/auth/register');
 
-    // Constructing the body as a JSON object
     final requestBody = jsonEncode({
       "firstName": firstName,
       "lastName": lastName,

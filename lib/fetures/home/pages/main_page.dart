@@ -4,7 +4,6 @@ import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../repositories/category_data.dart';
-import '../../food/main/pages/food_page.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -18,7 +17,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  // Define your widget options
   static List<Widget> _widgetOptions = <Widget>[
     DiscoverPage(),
     OrderView(),
@@ -27,7 +25,6 @@ class _MainPageState extends State<MainPage> {
 
   final bool hasUnreadNotifications = true;
 
-  // Initialize the PageController with the 'late' keyword
   late final PageController _pageController;
 
   @override
@@ -35,8 +32,6 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _pageController = PageController();
 
-    // Optional: Listen to Bloc state changes if needed
-    // This example assumes Bloc handles state updates appropriately
   }
 
   @override
@@ -44,8 +39,6 @@ class _MainPageState extends State<MainPage> {
     _pageController.dispose();
     super.dispose();
   }
-
-  // Handle page changes from swiping
   void _onPageChanged(int index) {
     BlocProvider.of<MainBloc>(context).add(ItemTapped(index));
   }
@@ -57,7 +50,6 @@ class _MainPageState extends State<MainPage> {
       child: BlocBuilder<MainBloc, MainState>(
         builder: (context, state) {
           if (state is MainInitial) {
-            // Synchronize PageView with BottomNavigationBar
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (_pageController.hasClients &&
                   (_pageController.page?.round() ?? 0) != state.selectedIndex) {
@@ -90,7 +82,6 @@ class _MainPageState extends State<MainPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Conditionally display Search Bar and Notifications only on the Discovery Page
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Row(
@@ -171,7 +162,6 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                 ),
                                 SizedBox(height: 12),
-                                // Categories
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Row(
@@ -191,8 +181,9 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                 ),
                                 SizedBox(height: 7),
-                                buildCategories(context, categories, state.currentCategory),
-                              ],
+                            buildCategories(context, state.currentCategory)
+
+                            ],
                             ),
                           ),
                         ];
@@ -204,7 +195,6 @@ class _MainPageState extends State<MainPage> {
                           : _widgetOptions.elementAt(state.selectedIndex),
                     );
                   } else {
-                    // For other pages (OrderView, ProfileView), just return the widget
                     return widget;
                   }
                 }).toList(),
@@ -237,7 +227,6 @@ class _MainPageState extends State<MainPage> {
               ),
             );
           }
-          // Handle other states if necessary
           return Container();
         },
       ),
