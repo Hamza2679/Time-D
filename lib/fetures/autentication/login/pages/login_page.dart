@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:delivery_app/fetures/autentication/signUp/pages/signup_page.dart';
 import 'package:delivery_app/fetures/home/pages/main_page.dart';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -21,8 +22,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   final _emailPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
   final _phonePasswordController = TextEditingController();
-  String _selectedCountryCode = '+251'; // Default country code (Ethiopia)
-  String _countryFlag = '🇪🇹'; // Default country flag (Ethiopia)
+  String _selectedCountryCode = '+251';
+  String _countryFlag = '🇪🇹';
   final String baseUrl = 'https://hello-delivery.onrender.com/api/v1';
 
   @override
@@ -55,7 +56,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     final password = _emailPasswordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      _showMessage('Please fill in both fields.',Colors.red);
+      _showMessage('Please fill in both fields.',redColor);
       return;
     }
 
@@ -74,19 +75,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
 
       if (response.statusCode == 201) {
-        _showMessage('logged in success fully.',Colors.green);
+        _showMessage('logged in success fully.',greenColor);
         final responseBody = json.decode(response.body);
-
-        // Extracting access_token and user details from the response
         final accessToken = responseBody['access_token'] as String?;
         final user = responseBody['user'] as Map<String, dynamic>?;
 
         if (accessToken == null || user == null) {
-          _showMessage('Invalid response from server. Please try again.',Colors.red);
+          _showMessage('Invalid response from server. Please try again.',redColor);
           return;
         }
 
-        // Save access token and user info in shared preferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('accessToken', accessToken);
         await prefs.setString('userId', user['id'] ?? '');
@@ -96,18 +94,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         await prefs.setString('lastName', user['lastName'] ?? '');
         await prefs.setString('profileImage', user['profileImage'] ?? '');
 
-        // Navigate to the main page
         Get.offAll(() => MainPage());
       } else {
         final responseBody = json.decode(response.body);
         _showMessage(
-            responseBody['message'] ?? 'Login failed. Please try again.',Colors.red);
+            responseBody['message'] ?? 'Login failed. Please try again.',redColor);
       }
     } catch (error, stackTrace) {
       print("Error: $error");
       print("StackTrace: $stackTrace");
       _showMessage(
-          'An error occurred. Please check your internet connection and try again.',Colors.red);
+          'An error occurred. Please check your internet connection and try again.',redColor);
     }
   }
 
@@ -129,7 +126,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        backgroundColor: primaryColor,
+        title: Text('Login',style: TextStyle(color: primaryTextColor),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -138,11 +136,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             SizedBox(height: 60),
             TabBar(
               controller: _tabController,
-              indicatorColor: Theme.of(context).primaryColor,
-              labelColor: Theme.of(context).primaryColor,
-              unselectedLabelColor: Colors.grey,
+              indicatorColor: primaryColor,
+              labelColor: primaryColor,
+              unselectedLabelColor: greyColor,
               tabs: [
-                Tab(text: 'Email Login'),
+                Tab(text: 'Email Login',),
                 Tab(text: 'Phone Login'),
               ],
             ),
@@ -150,7 +148,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  // Email Login Tab
                   ListView(
                     children: [
                       SizedBox(height: 16.0),
@@ -192,7 +189,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -201,7 +198,18 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       SizedBox(height: 32.0),
                       ElevatedButton(
                         onPressed: _loginWithEmail,
-                        child: Text('Login with Email'),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white, backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                          elevation: 5,
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ],
                   ),
@@ -279,7 +287,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -287,12 +295,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 32.0),
                       ElevatedButton(
-                        onPressed: () {
-                          // Handle phone login logic here
-                          print(
-                              'Logging in with phone: $_selectedCountryCode ${_phoneController.text}');
-                        },
-                        child: Text('Login with Phone'),
+                        onPressed: (){},
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white, backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                          elevation: 5,
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ],
                   ),
@@ -310,7 +325,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               child: Text(
                 "Don't have an account? Sign Up Here",
                 style: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: primaryColor,
                     fontWeight: FontWeight.bold),
               ),
             ),

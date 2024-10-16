@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Future<void> _sendOtp() async {
     final email = _emailController.text;
     if (email.isEmpty) {
-      _showMessage('Please enter your email.',Colors.red);
+      _showMessage('Please enter your email.',redColor);
       return;
     }
 
@@ -52,17 +53,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         );
       } else {
         final responseBody = json.decode(response.body);
-        _showMessage(responseBody['message'] ?? 'Failed to send OTP. Please try again.',Colors.red);
+        _showMessage(responseBody['message'] ?? 'Failed to send OTP. Please try again.',redColor);
       }
     } catch (error) {
-      _showMessage('An error occurred. Please check your internet connection and try again.',Colors.red);
+      _showMessage('An error occurred. Please check your internet connection and try again.',redColor);
     }
   }
 
   void _verifyOtp() {
     final otp = _otpController.text;
     if (otp.isEmpty) {
-      _showMessage('Please enter the OTP.',Colors.red);
+      _showMessage('Please enter the OTP.',redColor);
       return;
     }
 
@@ -73,22 +74,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   Future<void> _resetPassword() async {
     final email = _emailController.text;
-    final otp = int.tryParse(_otpController.text); // Parse OTP to int
+    final otp = int.tryParse(_otpController.text);
     final newPassword = _newPasswordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
-      _showMessage('Please fill in all fields.', Colors.red);
+      _showMessage('Please fill in all fields.', redColor);
       return;
     }
 
     if (newPassword != confirmPassword) {
-      _showMessage('Passwords do not match.', Colors.red);
+      _showMessage('Passwords do not match.', redColor);
       return;
     }
 
     if (otp == null) {
-      _showMessage('Please enter a valid OTP.', Colors.red);
+      _showMessage('Please enter a valid OTP.', redColor);
       return;
     }
 
@@ -109,16 +110,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       if (response.statusCode == 201) {
         // Password reset successfully
-        _showMessage('Password has been reset successfully', Colors.green);
+        _showMessage('Password has been reset successfully', greenColor);
 
-        // Navigate back to the login page or wherever appropriate
         Navigator.pop(context);
       } else {
         final responseBody = json.decode(response.body);
-        _showMessage(responseBody['message'] ?? 'Failed to reset password. Please try again.', Colors.red);
+        _showMessage(responseBody['message'] ?? 'Failed to reset password. Please try again.', redColor);
       }
     } catch (error) {
-      _showMessage('An error occurred. Please check your internet connection and try again.', Colors.red);
+      _showMessage('An error occurred. Please check your internet connection and try again.', redColor);
     }
   }
 
@@ -138,7 +138,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forgot Password'),
+        backgroundColor: primaryColor,
+        title: Text('Forgot Password',style: TextStyle(color: primaryTextColor),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -193,7 +194,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _sendOtp,
-              child: Text('Send OTP'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                elevation: 5,
+              ),
+              child: Text(
+                'Send OTP',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ],
         );
@@ -217,7 +229,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _verifyOtp,
-              child: Text('Verify OTP'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                elevation: 5,
+              ),
+              child: Text(
+                'Verify OTP',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ],
         );
@@ -249,7 +272,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _resetPassword,
-              child: Text('Reset Password'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                elevation: 5,
+              ),
+              child: Text(
+                'Reset Password',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ],
         );

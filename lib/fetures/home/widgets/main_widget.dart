@@ -12,6 +12,7 @@ import '../../electronics/main/pages/electronics_page.dart';
 import '../../food/main/pages/food_page.dart';
 import '../../food/restaurant_detail/page/restaurant_detail_page.dart';
 import '../../gift/gift_page.dart';
+import '../../organization/organization_page.dart';
 import '../../pharmacy/detail/page/pharmacy_detail_page.dart';
 import '../../pharmacy/main/page/pharmacy_page.dart';
 import '../../sparepart/sparepart_page.dart';
@@ -37,6 +38,29 @@ Widget buildCategoryPage(String currentCategory) {
       return DiscoverPage();
   }
 }
+Future<List<Map<String, dynamic>>> fetchOrganizations(String categoryId) async {
+  final response = await http.get(Uri.parse('https://hello-delivery.onrender.com/api/v1/category/$categoryId'));
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> data = json.decode(response.body)['data'];
+
+    return [
+      {
+        'id': data['id'],
+        'name': data['name'],
+        'location': data['address'],
+        'rating': data['rating'],
+        'image': data['image'],
+        'email': data['email'],
+        'phone': data['phone'],
+      }
+    ];
+  } else {
+    throw Exception('Failed to load organizations');
+  }
+}
+
+
 
 Future<List<Map<String, dynamic>>> fetchCategories() async {
   final response = await http.get(Uri.parse('https://hello-delivery.onrender.com/api/v1/category'));
@@ -46,20 +70,27 @@ Future<List<Map<String, dynamic>>> fetchCategories() async {
 
     List<Map<String, dynamic>> categoriesFromBackend = data.map((category) {
       return {
-        'image': category['image'],
-        'text': category['name'],
+        'id': category['id'], // Get the category ID
+        'image': category['image'], // Image URL
+        'text': category['name'], // Category name
         'route': '/${category['name'].toLowerCase().replaceAll(' ', '_')}' // Generate route based on category name
       };
     }).toList();
 
     // Prepend the 'All' category
-    categoriesFromBackend.insert(0, {"image": "assets/All_category.png", "text": "All", "route": "/discover"});
+    categoriesFromBackend.insert(0, {
+      "id": "all", // No specific ID for 'All'
+      "image": "assets/All_category.png",
+      "text": "All",
+      "route": "/discover"
+    });
 
     return categoriesFromBackend;
   } else {
     throw Exception('Failed to load categories');
   }
 }
+
 
 
 Widget buildCategories(BuildContext context, String currentCategory) {
@@ -84,10 +115,25 @@ Widget buildCategories(BuildContext context, String currentCategory) {
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
                 child: GestureDetector(
-                  onTap: () {
-                    BlocProvider.of<MainBloc>(context).add(CategoryTapped(category['route']));
-                  },
-                  child: Container(
+                    onTap: () async {
+                      String categoryId = category['id']; // Get category ID from tapped category
+
+                      try {
+                        List<Map<String, dynamic>> organizations = await fetchOrganizations(categoryId); // Fetch organizations for this category
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OrganizationPage(organizations: organizations),
+                          ),
+                        );
+                      } catch (error) {
+                        print('Error fetching organizations: $error');
+                      }
+                    },
+
+
+
+                child: Container(
                     width: 100,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(

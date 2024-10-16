@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -58,7 +59,7 @@ class _ProfileViewState extends State<ProfileView> {
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(0),
           child: AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: primaryColor,
             elevation: 0,
           ),
         ),
@@ -76,7 +77,7 @@ class _ProfileViewState extends State<ProfileView> {
                       CircleAvatar(
                         radius: 50,
                         backgroundImage: profileImage,
-                        backgroundColor: Colors.deepOrange,
+                        backgroundColor: primaryColor,
                       ),
                       SizedBox(height: 15),
                       Text(
@@ -84,14 +85,14 @@ class _ProfileViewState extends State<ProfileView> {
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: Colors.deepOrange[800],
+                          color: primaryColor,
                         ),
                       ),
                       SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.phone, color: Colors.deepOrange[600]),
+                          Icon(Icons.phone, color: secondaryColor),
                           SizedBox(width: 5),
                           Text(
                             phoneNumber,
@@ -154,7 +155,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   title: Text(
                                     "Your delivery address is",
                                     style: TextStyle(
-                                      color: Colors.deepOrange[800],
+                                      color: secondaryColor,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -205,7 +206,7 @@ class _ProfileViewState extends State<ProfileView> {
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.deepOrange,
+                  backgroundColor: primaryColor,
                   minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -214,7 +215,7 @@ class _ProfileViewState extends State<ProfileView> {
                 icon: Icon(Icons.logout, color: Colors.white),
                 label: Text(
                   'Log out',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: primaryTextColor),
                 ),
                 onPressed: () async {
                   await AuthenticationRepository.instance.logout();
@@ -245,12 +246,12 @@ class ProfileOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: Colors.deepOrange),
+      leading: Icon(icon, color: primaryColor),
       title: Text(
         title,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
       ),
-      trailing: Icon(Icons.arrow_forward_ios, color: Colors.deepOrange),
+      trailing: Icon(Icons.arrow_forward_ios, color: secondaryColor),
       onTap: onTap,
     );
   }

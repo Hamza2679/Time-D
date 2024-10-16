@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:delivery_app/fetures/autentication/login/pages/login_page.dart';
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:http/http.dart' as http;
@@ -70,18 +71,18 @@ class _SignUpPageState extends State<SignUpPage> {
       print('Response Body: ${response.body}');
 
       if (response.statusCode == 201) {
-        _showMessage('Registered successfully', Colors.green);
+        _showMessage('Registered successfully', greenColor);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } else {
         final responseData = json.decode(response.body);
-        _showMessage(responseData['message'] ?? 'Registration failed. Please try again.', Colors.red);
+        _showMessage(responseData['message'] ?? 'Registration failed. Please try again.', redColor);
       }
     } catch (error) {
       print('Error: $error');
-      _showMessage('An error occurred. Please check your internet connection and try again.', Colors.red);
+      _showMessage('An error occurred. Please check your internet connection and try again.', redColor);
     }
   }
 
@@ -99,7 +100,8 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
+        backgroundColor: primaryColor,
+        title: Text('Sign Up' , style: TextStyle(color: primaryTextColor),),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -160,7 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$_countryFlag $_selectedCountryCode'),
-                          Icon(Icons.arrow_drop_down, color: Colors.grey),
+                          Icon(Icons.arrow_drop_down, color: Colors.black),
                         ],
                       ),
                     ),
@@ -244,11 +246,25 @@ class _SignUpPageState extends State<SignUpPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 16.0,),
               ElevatedButton(
                 onPressed: _register,
-                child: Text('Sign Up'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  elevation: 5,
+                ),
+                child: Text(
+                  'Sign Up',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
+
+
+
             ],
           ),
         ),
