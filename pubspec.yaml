@@ -54,6 +54,7 @@ dependencies:
   share_plus: ^10.0.0
   url_launcher: ^6.0.9
   google_maps_flutter: ^2.1.5
+  video_player: ^2.4.6
 
 
 dev_dependencies:
@@ -93,7 +94,7 @@ flutter:
     - assets/splash1.jpg
     - assets/splash2.png
     - assets/profile_picture.jpg
-    - assets/appicon.png
+    - assets/appicon.jpg
     - assets/burger.jpg
     - assets/burger2.jpg
     - assets/checolat.jpg
@@ -147,6 +148,14 @@ flutter:
     - assets/restaurant5.jpg
     - assets/restaurant6.jpg
     - assets/All_category.png
+    - assets/fsvideo.mp4
+    - assets/ad1.png
+    - assets/ad2.png
+    - assets/ad3.png
+    - assets/ad4.png
+    - assets/ad6.png
+    - assets/ad5.png
+    - assets/com.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

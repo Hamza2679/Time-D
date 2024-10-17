@@ -3,6 +3,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../utils/colors.dart';
+
 class InviteAndSharePage extends StatefulWidget {
   @override
   _InviteAndSharePageState createState() => _InviteAndSharePageState();
@@ -68,12 +70,12 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.deepOrange, Colors.deepOrangeAccent],
+              colors: [primaryColor, secondaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             image: DecorationImage(
-              image: AssetImage('assets/appicon.png'),
+              image: AssetImage('assets/appicon.jpg'),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
                 Colors.black.withOpacity(0.2),
@@ -91,14 +93,14 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: primaryTextColor,
               ),
             ),
           ),
         ),
       ),
       body: _contacts.isEmpty
-          ? Center(child: CircularProgressIndicator(color: Colors.deepOrange,))
+          ? Center(child: CircularProgressIndicator(color: primaryColor,))
           : ListView.builder(
         itemCount: _contacts.length,
         itemBuilder: (context, index) {
@@ -111,12 +113,12 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
             ),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.deepOrangeAccent,
+                backgroundColor: secondaryColor,
                 child: Text(
                   contact.displayName != null && contact.displayName!.isNotEmpty
                       ? contact.displayName!.substring(0, 1).toUpperCase()
                       : '?',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: primaryTextColor),
                 ),
               ),
               title: Text(contact.displayName ?? 'Unknown'),
@@ -124,7 +126,7 @@ class _InviteAndSharePageState extends State<InviteAndSharePage> {
                   ? Text(contact.phones!.first.value ?? '')
                   : Text('No phone number'),
               onTap: () => inviteContact(contact),
-              trailing: Icon(Icons.send, color: Colors.deepOrange),
+              trailing: Icon(Icons.send, color: primaryColor),
             ),
           );
         },

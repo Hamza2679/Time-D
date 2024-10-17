@@ -157,20 +157,28 @@ Widget buildCategories(BuildContext context, String currentCategory) {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
+                          child: category['id'] == "all"
+                              ? Image.asset(
+                            category['image'],
+                            width: 80,
+                            height: 48,
+                            fit: BoxFit.cover,
+                          )
+                              : Image.network(
                             category['image'],
                             width: 80,
                             height: 48,
                             fit: BoxFit.cover,
                           ),
                         ),
-                        SizedBox(height: 8),
+
+                        SizedBox(height: 2),
                         Text(
                           category['text'],
                           style: TextStyle(
                             color: isSelected ? primaryTextColor : secondaryTextColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: 13,
+                            fontSize: 10,
                           ),
                         ),
                       ],

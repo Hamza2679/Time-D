@@ -61,6 +61,7 @@ class _OrderViewState extends State<OrderView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: groupedOrders.isEmpty
           ? Center(
         child: Text(

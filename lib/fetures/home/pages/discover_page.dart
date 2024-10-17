@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class DiscoverPage extends StatelessWidget {
@@ -15,36 +16,44 @@ class DiscoverPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Hero Banner
-            Container(
-              height: 180,
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                image: DecorationImage(
-                  image: NetworkImage('https://t3.ftcdn.net/jpg/04/83/92/74/360_F_483927409_TLxvOnOkNm1fj6uZT8oO9p5wYvJGuAG7.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  '50% Off on First Order!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+            Column(
+              children: [
+                Container(
+                  height: 180,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    image: DecorationImage(
+                      image: AssetImage("assets/com.png"),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
+                SizedBox(height: 30),
+                Container(
+                  height: 180,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    image: DecorationImage(
+                      image: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaAQOgtS41sfTsJSXM4e48ljj5dyNFYDu8vQ&s'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '50% Off on First Order!',
+                      style: TextStyle(
+                        color: secondaryTextColor,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-
-            ),
-
-
-            // Popular Stores/Restaurants
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
@@ -55,7 +64,6 @@ class DiscoverPage extends StatelessWidget {
             SizedBox(height: 10),
             _buildStoreCarousel(),
 
-            // Top Deals
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
@@ -97,9 +105,9 @@ class DiscoverPage extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildStoreCard('Store 1', 'https://example.com/store1.jpg', 4.5),
-          _buildStoreCard('Store 2', 'https://example.com/store2.jpg', 4.0),
-          _buildStoreCard('Store 3', 'https://example.com/store3.jpg', 4.8),
+          _buildStoreCard('Store 1', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHgwWivilxxH1eAitAAZhuVpA-UV8ldD3VWg&s', 4.5),
+          _buildStoreCard('Store 2', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdTKo1SgPATsCrA4rNw-ADARsZVHBSR6KAyg&s', 4.0),
+          _buildStoreCard('Store 3', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6QE34KKvZXw7bOM7nUSkffAU46hzwL25xfg&s', 4.8),
         ],
       ),
     );

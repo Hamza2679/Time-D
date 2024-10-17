@@ -12,7 +12,7 @@ class OrganizationPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: Text('Organizations' , style: TextStyle(color: primaryTextColor),),
+        title: Text('Organizations', style: TextStyle(color: primaryTextColor)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -35,67 +35,86 @@ class OrganizationPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15.0),
-                      topRight: Radius.circular(15.0),
-                    ),
-                    child: Image.network(
-                      organization['image'],
-                      width: double.infinity,
-                      height: 150, // Increased image height
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
+                  // Image section with rating overlay
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(15.0),
+                          topRight: Radius.circular(15.0),
+                        ),
+                        child: Image.network(
+                          organization['image'],
                           width: double.infinity,
-                          height: 150, // Adjusted to match image height
-                          color: Colors.grey[300],
-                          child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0), // Reduced padding
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          organization['name'],
-                          style: TextStyle(
-                            fontSize: 14, // Reduced font size
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis, // Handle long names
+                          height: 190, // Reduced image height to prevent overflow
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: double.infinity,
+                              height: 190, // Adjusted to match new image height
+                              color: Colors.grey[300],
+                              child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                            );
+                          },
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          organization['location'],
-                          style: TextStyle(
-                            fontSize: 12, // Reduced font size
-                            color: Colors.grey[700],
+                      ),
+                      // Rating overlay on the bottom right corner of the image
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis, // Handle long addresses
-                        ),
-                        SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(Icons.star, color: Colors.amber, size: 16),
-                            SizedBox(width: 4),
-                            Text(
-                              organization['rating'].toStringAsFixed(2), // Two decimal places for rating
-                              style: TextStyle(
-                                fontSize: 12, // Reduced font size
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                          child: Row(
+                            children: [
+                              Icon(Icons.star, color: Colors.amber, size: 16),
+                              SizedBox(width: 4),
+                              Text(
+                                organization['rating'].toStringAsFixed(2), // Two decimal places for rating
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryTextColor,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  // Name and address section below the image
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            organization['name'],
+                            style: TextStyle(
+                              fontSize: 14, // Reduced font size
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis, // Handle long names
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            organization['location'],
+                            style: TextStyle(
+                              fontSize: 12, // Reduced font size
+                              color: Colors.grey[700],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis, // Handle long addresses
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

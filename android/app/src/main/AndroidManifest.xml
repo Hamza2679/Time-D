@@ -13,7 +13,7 @@
 
 
     <application
-        android:label="Hello Delivery"
+        android:label="Time Delivery"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,3 +1,4 @@
+import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class HelpFaqPage extends StatelessWidget {
@@ -5,8 +6,8 @@ class HelpFaqPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange,
-        title: Text('Help & FAQ', style: TextStyle(color: Colors.white),),
+        backgroundColor: primaryColor,
+        title: Text('Help & FAQ', style: TextStyle(color: primaryTextColor),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

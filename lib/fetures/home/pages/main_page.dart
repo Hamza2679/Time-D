@@ -3,6 +3,7 @@ import 'package:delivery_app/fetures/notification/notification_page.dart';
 import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_player/video_player.dart';
 import '../../../repositories/category_data.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
@@ -26,19 +27,38 @@ class _MainPageState extends State<MainPage> {
   final bool hasUnreadNotifications = true;
 
   late final PageController _pageController;
+  late VideoPlayerController _videoController;
+
+  List<String> adImages = [
+    'assets/ad4.png',
+    'assets/ad6.png',
+    'assets/ad1.png',
+    'assets/ad2.png',
+    'assets/ad3.png',
+    'assets/ad5.png'
+  ];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
 
+    // Initialize the video controller
+    _videoController = VideoPlayerController.asset('assets/fsvideo.mp4')
+      ..initialize().then((_) {
+        setState(() {}); // Update UI once the video is initialized
+      });
+    _videoController.setLooping(true);
+    _videoController.play(); // Auto-play the video
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _videoController.dispose(); // Dispose of the video controller
     super.dispose();
   }
+
   void _onPageChanged(int index) {
     BlocProvider.of<MainBloc>(context).add(ItemTapped(index));
   }
@@ -72,7 +92,6 @@ class _MainPageState extends State<MainPage> {
                 controller: _pageController,
                 onPageChanged: _onPageChanged,
                 children: _widgetOptions.map((widget) {
-                  // Wrap DiscoverPage with NestedScrollView for additional UI elements
                   if (widget is DiscoverPage) {
                     return NestedScrollView(
                       headerSliverBuilder:
@@ -112,14 +131,23 @@ class _MainPageState extends State<MainPage> {
                                               right: 8,
                                               top: 6,
                                               child: Container(
-                                                padding: EdgeInsets.all(0),
+                                                padding: EdgeInsets.all(2),
                                                 decoration: BoxDecoration(
                                                   color: redColor,
-                                                  borderRadius: BorderRadius.circular(6),
+                                                  borderRadius: BorderRadius.circular(12),
                                                 ),
                                                 constraints: BoxConstraints(
-                                                  minWidth: 15,
-                                                  minHeight: 15,
+                                                  minWidth: 16,
+                                                  minHeight: 16,
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    '1', // Example for 1 unread notification
+                                                    style: TextStyle(
+                                                      color: primaryTextColor,
+                                                      fontSize: 10,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -133,31 +161,51 @@ class _MainPageState extends State<MainPage> {
                                   height: 150,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: 50,
+                                    itemCount: adImages.length ,
                                     itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                        child: Card(
-                                          color: primaryColor,
-                                          elevation: 5,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12.0),
+                                      if (index == 0) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                          child: Card(
+                                            color: primaryColor,
+                                            elevation: 5,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12.0),
+                                            ),
+                                            child: Container(
+                                              width: 280,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(12.0),
+                                                child: _videoController.value.isInitialized
+                                                    ? VideoPlayer(_videoController)
+                                                    : Center(child: CircularProgressIndicator()),
+                                              ),
+                                            ),
                                           ),
-                                          child: Container(
-                                            width: 280,
-                                            child: Center(
-                                              child: Text(
-                                                'Advert here',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  color: primaryTextColor,
-                                                  fontWeight: FontWeight.bold,
+                                        );
+                                      } else {
+                                        // Display images for index 0, 1, 2
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                          child: Card(
+                                            color: primaryColor,
+                                            elevation: 5,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12.0),
+                                            ),
+                                            child: Container(
+                                              width: 280,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(12.0),
+                                                child: Image.asset(
+                                                  adImages[index],
+                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      }
                                     },
                                   ),
                                 ),
@@ -181,9 +229,8 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                 ),
                                 SizedBox(height: 7),
-                            buildCategories(context, state.currentCategory)
-
-                            ],
+                                buildCategories(context, state.currentCategory),
+                              ],
                             ),
                           ),
                         ];
