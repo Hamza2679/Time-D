@@ -38,27 +38,52 @@ Widget buildCategoryPage(String currentCategory) {
       return DiscoverPage();
   }
 }
+
+
+
 Future<List<Map<String, dynamic>>> fetchOrganizations(String categoryId) async {
   final response = await http.get(Uri.parse('https://hello-delivery.onrender.com/api/v1/category/$categoryId'));
 
   if (response.statusCode == 200) {
-    Map<String, dynamic> data = json.decode(response.body)['data'];
+    Map<String, dynamic> data = json.decode(response.body);
+    List<dynamic> organizations = data['organizations'];
 
-    return [
-      {
-        'id': data['id'],
-        'name': data['name'],
-        'location': data['address'],
-        'rating': data['rating'],
-        'image': data['image'],
-        'email': data['email'],
-        'phone': data['phone'],
-      }
-    ];
+    if (organizations != null && organizations.isNotEmpty) {
+      return organizations.map((organization) {
+        // Map over the ProductOrganization list to get products
+        List<Map<String, dynamic>> products = (organization['ProductOrganization'] as List<dynamic>).map((productOrg) {
+          final product = productOrg['product'];
+          return {
+            'productId': product['id'],
+            'name': product['name'],
+            'price': product['price'],
+            'description': product['description'],
+            'image': product['image'],
+            'paymentCategory': product['paymentCategory'],
+            'initialDeliveryFee': product['InitialdeliveryFee'],
+          };
+        }).toList();
+
+        return {
+          'id': organization['id'],
+          'name': organization['name'],
+          'location': organization['address'],
+          'rating': organization['rating'],
+          'image': organization['image'],
+          'email': organization['email'],
+          'phone': organization['phone'],
+          'products': products, // Add the products list here
+        };
+      }).toList();
+    } else {
+      return [];
+    }
   } else {
     throw Exception('Failed to load organizations');
   }
 }
+
+
 
 
 

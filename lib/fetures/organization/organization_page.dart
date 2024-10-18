@@ -1,14 +1,19 @@
 import 'package:delivery_app/utils/colors.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../organization_detail/organization_detail_page.dart';
+
+
+
 class OrganizationPage extends StatelessWidget {
-  final List<Map<String, dynamic>> organizations;
+  final List<Map<String, dynamic>>? organizations; // Allow null here
 
   OrganizationPage({required this.organizations});
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, dynamic>> organizationList = organizations ?? []; // Default to empty list if null
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
@@ -16,108 +21,125 @@ class OrganizationPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Two cards per row
-            crossAxisSpacing: 10, // Space between columns
-            mainAxisSpacing: 10, // Space between rows
-            childAspectRatio: 3 / 4, // Adjust this to control card height relative to width
+        child: organizationList.isEmpty
+            ? Center(
+          child: Text(
+            'No Organizations Found',
+            style: TextStyle(color: Colors.grey, fontSize: 18),
           ),
-          itemCount: organizations.length,
+        )
+            : GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 3 / 4,
+          ),
+          itemCount: organizationList.length,
           itemBuilder: (context, index) {
-            final organization = organizations[index];
+            final organization = organizationList[index];
 
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              elevation: 5, // Adds shadow for a lifted effect
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Image section with rating overlay
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15.0),
-                          topRight: Radius.circular(15.0),
-                        ),
-                        child: Image.network(
-                          organization['image'],
-                          width: double.infinity,
-                          height: 190, // Reduced image height to prevent overflow
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: double.infinity,
-                              height: 190, // Adjusted to match new image height
-                              color: Colors.grey[300],
-                              child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                            );
-                          },
-                        ),
-                      ),
-                      // Rating overlay on the bottom right corner of the image
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.black54,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 16),
-                              SizedBox(width: 4),
-                              Text(
-                                organization['rating'].toStringAsFixed(2), // Two decimal places for rating
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryTextColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Name and address section below the image
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            organization['name'],
-                            style: TextStyle(
-                              fontSize: 14, // Reduced font size
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis, // Handle long names
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            organization['location'],
-                            style: TextStyle(
-                              fontSize: 12, // Reduced font size
-                              color: Colors.grey[700],
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis, // Handle long addresses
-                          ),
-                        ],
-                      ),
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrganizationDetailPage(
+                      organizationName: organization['name'],
+                      products: organization['products'] ?? [], // Default to empty list if null
                     ),
                   ),
-                ],
+                );
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                elevation: 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(15.0),
+                            topRight: Radius.circular(15.0),
+                          ),
+                          child: Image.network(
+                            organization['image'],
+                            width: double.infinity,
+                            height: 190,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: double.infinity,
+                                height: 190,
+                                color: Colors.grey[300],
+                                child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                              );
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.star, color: Colors.amber, size: 16),
+                                SizedBox(width: 4),
+                                Text(
+                                  organization['rating']?.toStringAsFixed(2) ?? 'N/A', // Handle null rating
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: primaryTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              organization['name'] ?? 'Unknown Organization',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              organization['location'] ?? 'Unknown Location',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[700],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },

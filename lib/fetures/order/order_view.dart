@@ -1,152 +1,212 @@
-import 'dart:convert';
-import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../models/order_model.dart';
+import 'package:delivery_app/utils/colors.dart';
 
 class OrderView extends StatefulWidget {
   @override
   _OrderViewState createState() => _OrderViewState();
 }
 
-class _OrderViewState extends State<OrderView> {
-  Map<String, List<OrderItem>> groupedOrders = {};
+class _OrderViewState extends State<OrderView> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  final List<Map<String, dynamic>> orderHistory = [
+    {
+      'orderId': '001',
+      'date': '2024-10-01',
+      'totalPrice': 29.99,
+      'status': 'Pending',
+      'items': [
+        {'name': 'Burger', 'quantity': 2, 'price': 10.0},
+        {'name': 'Fries', 'quantity': 1, 'price': 5.0},
+      ],
+    },
+    {
+      'orderId': '002',
+      'date': '2024-09-25',
+      'totalPrice': 49.99,
+      'status': 'Completed',
+      'items': [
+        {'name': 'Pizza', 'quantity': 1, 'price': 15.0},
+        {'name': 'Soda', 'quantity': 2, 'price': 3.0},
+      ],
+    },
+    {
+      'orderId': '003',
+      'date': '2024-09-30',
+      'totalPrice': 19.99,
+      'status': 'Canceled',
+      'items': [
+        {'name': 'Taco', 'quantity': 3, 'price': 6.0},
+      ],
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
-    _loadOrders();
+    _tabController = TabController(length: 3, vsync: this); // Three tabs: History, Pending, Canceled
   }
 
-  Future<void> _loadOrders() async {
-    final loadedOrders = await loadOrders();
-    setState(() {
-      groupedOrders = groupOrdersByRestaurant(loadedOrders);
-    });
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
-  Future<List<OrderItem>> loadOrders() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String>? orderJsonList = prefs.getStringList('orderItems');
-    if (orderJsonList != null) {
-      return orderJsonList.map((json) => OrderItem.fromJson(jsonDecode(json))).toList();
-    }
-    return [];
-  }
-
-  Map<String, List<OrderItem>> groupOrdersByRestaurant(List<OrderItem> orders) {
-    Map<String, List<OrderItem>> grouped = {};
-    for (var item in orders) {
-      if (!grouped.containsKey(item.restaurantName)) {
-        grouped[item.restaurantName] = [];
-      }
-      grouped[item.restaurantName]!.add(item);
-    }
-    return grouped;
-  }
-
-  Future<void> removeOrder(String restaurantName) async {
-    groupedOrders.remove(restaurantName);
-    setState(() {});
-
-    final prefs = await SharedPreferences.getInstance();
-    List<OrderItem> remainingOrders = [];
-    groupedOrders.values.forEach((orderList) {
-      remainingOrders.addAll(orderList);
-    });
-    List<String> orderJsonList = remainingOrders.map((order) => jsonEncode(order.toJson())).toList();
-    await prefs.setStringList('orderItems', orderJsonList);
+  // Filtering orders based on status
+  List<Map<String, dynamic>> getOrdersByStatus(String status) {
+    return orderHistory.where((order) => order['status'] == status).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body: groupedOrders.isEmpty
-          ? Center(
-        child: Text(
-          'No items in your order.',
-          style: TextStyle(fontSize: 18, color: greyColor),
+      appBar: AppBar(
+        title: Text('Order Status'),
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: primaryColor,
+          indicatorColor: primaryColor, // Set the color of the indicator
+          tabs: [
+            Tab(text: 'History',),
+            Tab(text: 'Pending'),
+            Tab(text: 'Canceled'),
+          ],
         ),
-      )
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: groupedOrders.entries.map((entry) {
-            final restaurantName = entry.key;
-            final items = entry.value;
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // History Orders
+          OrderListView(orders: getOrdersByStatus('Completed')),
 
-            return Card(
-              elevation: 4.0,
-              margin: EdgeInsets.symmetric(vertical: 10.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
+          // Pending Orders
+          OrderListView(orders: getOrdersByStatus('Pending')),
+
+          // Canceled Orders
+          OrderListView(orders: getOrdersByStatus('Canceled')),
+        ],
+      ),
+    );
+  }
+}
+
+// This widget is used to display the order list based on status (History, Pending, Canceled)
+class OrderListView extends StatelessWidget {
+  final List<Map<String, dynamic>> orders;
+
+  OrderListView({required this.orders});
+
+  @override
+  Widget build(BuildContext context) {
+    if (orders.isEmpty) {
+      return Center(
+        child: Text(
+          'No orders available',
+          style: TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: orders.length,
+      itemBuilder: (context, index) {
+        final order = orders[index];
+        return Card(
+          margin: const EdgeInsets.all(10),
+          child: ListTile(
+            leading: Icon(
+              order['status'] == 'Pending'
+                  ? Icons.hourglass_empty
+                  : order['status'] == 'Completed'
+                  ? Icons.check_circle
+                  : Icons.cancel,
+              color: order['status'] == 'Pending'
+                  ? Colors.orange
+                  : order['status'] == 'Completed'
+                  ? Colors.green
+                  : Colors.red,
+            ),
+            title: Text('Order #${order['orderId']}'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Date: ${order['date']}'),
+                Text('Total: \$${order['totalPrice'].toStringAsFixed(2)}'),
+                Text('Status: ${order['status']}'),
+              ],
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.arrow_forward),
+              onPressed: () {
+                // Navigate to a detailed order view
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderDetailPage(order: order),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class OrderDetailPage extends StatelessWidget {
+  final Map<String, dynamic> order;
+
+  OrderDetailPage({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Order #${order['orderId']}'),
+        backgroundColor: primaryColor,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Order Details',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text('Order ID: ${order['orderId']}'),
+            Text('Date: ${order['date']}'),
+            Text('Status: ${order['status']}'),
+            SizedBox(height: 10),
+            Divider(),
+            Text(
+              'Items Ordered',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: order['items'].length,
+                itemBuilder: (context, index) {
+                  final item = order['items'][index];
+                  return ListTile(
+                    leading: Text('${item['quantity']}x'),
+                    title: Text(item['name']),
+                    trailing: Text('\$${(item['price'] * item['quantity']).toStringAsFixed(2)}'),
+                  );
+                },
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      restaurantName,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    ...items.map((item) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item.itemName,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Qty: ${item.quantity}  ,  ',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          Text(
-                            '\$${item.price.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-                    SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          removeOrder(restaurantName);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: redColor, // Background color
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text('cancel' , style: TextStyle(color: primaryTextColor),),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+            ),
+            Divider(),
+            SizedBox(height: 10),
+            Text(
+              'Total: \$${order['totalPrice'].toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     );
