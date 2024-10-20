@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:delivery_app/utils/colors.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
+import '../../utils/colors.dart';
 
 class OrderView extends StatefulWidget {
   @override
@@ -7,208 +11,124 @@ class OrderView extends StatefulWidget {
 }
 
 class _OrderViewState extends State<OrderView> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  final List<Map<String, dynamic>> orderHistory = [
-    {
-      'orderId': '001',
-      'date': '2024-10-01',
-      'totalPrice': 29.99,
-      'status': 'Pending',
-      'items': [
-        {'name': 'Burger', 'quantity': 2, 'price': 10.0},
-        {'name': 'Fries', 'quantity': 1, 'price': 5.0},
-      ],
-    },
-    {
-      'orderId': '002',
-      'date': '2024-09-25',
-      'totalPrice': 49.99,
-      'status': 'Completed',
-      'items': [
-        {'name': 'Pizza', 'quantity': 1, 'price': 15.0},
-        {'name': 'Soda', 'quantity': 2, 'price': 3.0},
-      ],
-    },
-    {
-      'orderId': '003',
-      'date': '2024-09-30',
-      'totalPrice': 19.99,
-      'status': 'Canceled',
-      'items': [
-        {'name': 'Taco', 'quantity': 3, 'price': 6.0},
-      ],
-    },
-  ];
+  TabController? _tabController;
+  List<dynamic> allOrders = [];
+  List<dynamic> ongoingOrders = [];
+  List<dynamic> completedOrders = [];
+  List<dynamic> canceledOrders = [];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this); // Three tabs: History, Pending, Canceled
+    _tabController = TabController(length: 4, vsync: this);
+    _fetchOrders(); // Fetch the orders on page load
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+
+  Future<void> _fetchOrders() async {
+    const String url = 'https://hello-delivery.onrender.com/api/v1/order/my';
+
+    try {
+      // Retrieve the access token from SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('accessToken');
+
+      if (accessToken == null) {
+        // Handle case where the token is missing
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No access token found. Please log in.')),
+        );
+        return;
+      }
+
+      // Make the API request with the retrieved access token
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken', // Use the token from SharedPreferences
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> orders = json.decode(response.body)['orders'];
+
+        setState(() {
+          allOrders = orders;
+          ongoingOrders = orders.where((order) {
+            return order['status'] == 'accepted' || order['status'] == 'pending';
+          }).toList();
+          completedOrders = orders.where((order) => order['status'] == 'delivered').toList();
+          canceledOrders = orders.where((order) => order['status'] == 'rejected').toList();
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch orders.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    }
   }
 
-  // Filtering orders based on status
-  List<Map<String, dynamic>> getOrdersByStatus(String status) {
-    return orderHistory.where((order) => order['status'] == status).toList();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Order Status'),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: primaryColor,
-          indicatorColor: primaryColor, // Set the color of the indicator
-          tabs: [
-            Tab(text: 'History',),
-            Tab(text: 'Pending'),
-            Tab(text: 'Canceled'),
-          ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(1.0),
+        child: AppBar(
+          backgroundColor: primaryColor,
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(text: 'Ongoing'),
+              Tab(text: 'All'),
+              Tab(text: 'Completed'),
+              Tab(text: 'Canceled'),
+            ],
+          ),
         ),
       ),
+
       body: TabBarView(
         controller: _tabController,
         children: [
-          // History Orders
-          OrderListView(orders: getOrdersByStatus('Completed')),
-
-          // Pending Orders
-          OrderListView(orders: getOrdersByStatus('Pending')),
-
-          // Canceled Orders
-          OrderListView(orders: getOrdersByStatus('Canceled')),
+          _buildOrderList(ongoingOrders, 'No ongoing orders'),
+          _buildOrderList(allOrders, 'No orders found'),
+          _buildOrderList(completedOrders, 'No completed orders'),
+          _buildOrderList(canceledOrders, 'No canceled orders'),
         ],
       ),
     );
   }
-}
 
-// This widget is used to display the order list based on status (History, Pending, Canceled)
-class OrderListView extends StatelessWidget {
-  final List<Map<String, dynamic>> orders;
-
-  OrderListView({required this.orders});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildOrderList(List<dynamic> orders, String emptyMessage) {
     if (orders.isEmpty) {
-      return Center(
-        child: Text(
-          'No orders available',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
-        ),
-      );
+      return Center(child: Text(emptyMessage));
     }
 
     return ListView.builder(
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
-        return Card(
-          margin: const EdgeInsets.all(10),
-          child: ListTile(
-            leading: Icon(
-              order['status'] == 'Pending'
-                  ? Icons.hourglass_empty
-                  : order['status'] == 'Completed'
-                  ? Icons.check_circle
-                  : Icons.cancel,
-              color: order['status'] == 'Pending'
-                  ? Colors.orange
-                  : order['status'] == 'Completed'
-                  ? Colors.green
-                  : Colors.red,
-            ),
-            title: Text('Order #${order['orderId']}'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Date: ${order['date']}'),
-                Text('Total: \$${order['totalPrice'].toStringAsFixed(2)}'),
-                Text('Status: ${order['status']}'),
-              ],
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.arrow_forward),
-              onPressed: () {
-                // Navigate to a detailed order view
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OrderDetailPage(order: order),
-                  ),
-                );
-              },
-            ),
-          ),
+        return ListTile(
+          title: Text('Order ID: ${order['id']}'),
+          subtitle: Text('Status: ${order['status']}'),
+          trailing: Text('Total: \$${order['total']}'),
+          onTap: () {
+            // Handle order tap, e.g., navigate to order details
+          },
         );
       },
     );
   }
-}
-
-class OrderDetailPage extends StatelessWidget {
-  final Map<String, dynamic> order;
-
-  OrderDetailPage({required this.order});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Order #${order['orderId']}'),
-        backgroundColor: primaryColor,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Order Details',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text('Order ID: ${order['orderId']}'),
-            Text('Date: ${order['date']}'),
-            Text('Status: ${order['status']}'),
-            SizedBox(height: 10),
-            Divider(),
-            Text(
-              'Items Ordered',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: order['items'].length,
-                itemBuilder: (context, index) {
-                  final item = order['items'][index];
-                  return ListTile(
-                    leading: Text('${item['quantity']}x'),
-                    title: Text(item['name']),
-                    trailing: Text('\$${(item['price'] * item['quantity']).toStringAsFixed(2)}'),
-                  );
-                },
-              ),
-            ),
-            Divider(),
-            SizedBox(height: 10),
-            Text(
-              'Total: \$${order['totalPrice'].toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 }

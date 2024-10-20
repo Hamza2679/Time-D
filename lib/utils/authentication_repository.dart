@@ -15,7 +15,7 @@ class AuthenticationRepository extends GetxService {
   }
 
   Future<void> _checkAuthenticationStatus() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 2));
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('accessToken');
     if (token != null && token.isNotEmpty) {

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:delivery_app/utils/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // For token management
+import 'package:http/http.dart' as http; // For making HTTP requests
+import 'dart:convert';
+
+import '../payment/payment_page.dart'; // For JSON encoding/decoding
 
 class OrderSummaryPage extends StatefulWidget {
   final List<Map<String, dynamic>> selectedProducts;
@@ -15,12 +20,11 @@ class OrderSummaryPage extends StatefulWidget {
 }
 
 class _OrderSummaryPageState extends State<OrderSummaryPage> {
-  double deliveryFee = 50;
   String selectedAddressOption = 'auto';
-  String selectedPaymentMethod = 'after_delivery';
-
   TextEditingController manualAddressController = TextEditingController();
   TextEditingController streetController = TextEditingController();
+  final double defaultLatitude = 6.5244; // Default latitude
+  final double defaultLongitude = 3.3792; // Default longitude
 
   // Filter out products where the quantity is greater than 0
   List<Map<String, dynamic>> getFilteredProducts() {
@@ -44,25 +48,97 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     return filteredQuantities;
   }
 
-  double getTotalPrice() {
-    double total = 0.0;
-    List<Map<String, dynamic>> filteredProducts = getFilteredProducts();
-    List<int> filteredQuantities = getFilteredQuantities();
-    for (int i = 0; i < filteredProducts.length; i++) {
-      total += (filteredProducts[i]['price'] ?? 0.0) * filteredQuantities[i];
+  Future<void> confirmOrder() async {
+    try {
+      // Retrieve the access token from SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('accessToken');
+
+      // Ensure the token is available
+      if (accessToken == null) {
+        throw Exception('No access token found');
+      }
+
+      // Prepare the products for the request
+      List<Map<String, dynamic>> products = [];
+      final filteredProducts = getFilteredProducts();
+      final filteredQuantities = getFilteredQuantities();
+      for (int i = 0; i < filteredProducts.length; i++) {
+        products.add({
+          'productId': filteredProducts[i]['productId'],
+          'quantity': filteredQuantities[i],
+        });
+      }
+
+      // Create the request payload
+      final Map<String, dynamic> requestBody = {
+        'products': products,
+        'latitude': defaultLatitude,
+        'longitude': defaultLongitude,
+      };
+
+      // Make the API request
+      final response = await http.post(
+        Uri.parse('https://hello-delivery.onrender.com/api/v1/order'),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(requestBody),
+      );
+
+      // Log response for debugging
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      // Initialize default values for deliveryFee and totalFee
+      double deliveryFee = 0.0;
+      double totalFee = 0.0;
+      String ordeId = "";
+
+      // Handle the response
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var orderResponse = json.decode(response.body);
+
+        // Check if response is an object or a list
+        if (orderResponse is List && orderResponse.isNotEmpty) {
+          deliveryFee = orderResponse[0]['totalDeliveryFee'] ?? 0.0;
+          totalFee = orderResponse[0]['totalAmount'] ?? 0.0;
+          ordeId = orderResponse[0]['id']?? 0.0;
+        } else if (orderResponse is Map) {
+          deliveryFee = orderResponse['totalDeliveryFee'] ?? 0.0;
+          totalFee = orderResponse['totalAmount'] ?? 0.0;
+          ordeId = orderResponse['id'] ?? 0.0;
+        }
+
+        // Navigate to PaymentPage with the fees
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentPage(
+              deliveryFee: deliveryFee,
+              totalFee: totalFee,
+              orderId: ordeId
+            ),
+          ),
+        );
+      } else {
+        throw Exception('Failed to confirm order');
+      }
+    } catch (e) {
+      print('Error confirming order: $e');
     }
-    return total;
   }
+
 
   @override
   Widget build(BuildContext context) {
-    // Use filtered products and quantities for displaying and calculating totals
     final filteredProducts = getFilteredProducts();
     final filteredQuantities = getFilteredQuantities();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Summary',style: TextStyle(color: primaryTextColor),),
+        title: Text('Order Summary', style: TextStyle(color: primaryTextColor)),
         backgroundColor: primaryColor,
       ),
       body: SingleChildScrollView(
@@ -80,7 +156,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
               )
                   : ListView.builder(
                 physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true, // To prevent taking up extra space
+                shrinkWrap: true,
                 itemCount: filteredProducts.length,
                 itemBuilder: (context, index) {
                   final product = filteredProducts[index];
@@ -147,52 +223,13 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                 ),
               ],
               SizedBox(height: 20),
-              // Payment Method Section
-              Text(
-                'Select Payment Method:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Row(
-                children: [
-                  Radio(
-                    value: 'after_delivery',
-                    groupValue: selectedPaymentMethod,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedPaymentMethod = value.toString();
-                      });
-                    },
-                  ),
-                  Text('Pay After Delivery'),
-                  Radio(
-                    value: 'credit_card',
-                    groupValue: selectedPaymentMethod,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedPaymentMethod = value.toString();
-                      });
-                    },
-                  ),
-                  Text('Pay now'),
-                ],
-              ),
-              SizedBox(height: 20),
-              // Total Price Section
-              Text(
-                'Total: \$${(getTotalPrice() + deliveryFee).toStringAsFixed(2)} (Delivery: \$${deliveryFee.toStringAsFixed(2)})',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
               // Confirm Order Button
               ElevatedButton(
-                onPressed: () {
-                  // Logic for confirming order
-                  print('Order confirmed');
-                },
-                child: Text('Confirm Order', style: TextStyle(color: primaryTextColor),),
+                onPressed: confirmOrder, // Call the confirm order function
+                child: Text(
+                  'Confirm Order',
+                  style: TextStyle(color: primaryTextColor),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),

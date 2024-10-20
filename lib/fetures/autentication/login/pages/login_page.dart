@@ -50,6 +50,62 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     );
   }
 
+  Future<void> _loginWithPhone() async {
+    final phoneNumber = '$_selectedCountryCode${_phoneController.text}';
+    final password = _phonePasswordController.text;
+
+    if (phoneNumber.isEmpty || password.isEmpty) {
+      _showMessage('Please fill in both fields.', redColor);
+      return;
+    }
+
+    final url = Uri.parse('$baseUrl/auth/login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'phone': phoneNumber,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        _showMessage('Logged in successfully.', greenColor);
+        final responseBody = json.decode(response.body);
+        final accessToken = responseBody['access_token'] as String?;
+        final user = responseBody['user'] as Map<String, dynamic>?;
+
+        if (accessToken == null || user == null) {
+          _showMessage('Invalid response from server. Please try again.', redColor);
+          return;
+        }
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('accessToken', accessToken);
+        await prefs.setString('userId', user['id'] ?? '');
+        await prefs.setString('phone', user['phone'] ?? '');
+        await prefs.setString('email', user['email'] ?? '');
+        await prefs.setString('firstName', user['firstName'] ?? '');
+        await prefs.setString('lastName', user['lastName'] ?? '');
+        await prefs.setString('profileImage', user['profileImage'] ?? '');
+
+        Get.offAll(() => MainPage());
+      } else {
+        final responseBody = json.decode(response.body);
+        _showMessage(responseBody['message'] ?? 'Login failed. Please try again.', redColor);
+      }
+    } catch (error, stackTrace) {
+      print("Error: $error");
+      print("StackTrace: $stackTrace");
+      _showMessage('An error occurred. Please check your internet connection and try again.', redColor);
+    }
+  }
+
+
 
   Future<void> _loginWithEmail() async {
     final email = _emailController.text;
@@ -140,80 +196,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               labelColor: primaryColor,
               unselectedLabelColor: greyColor,
               tabs: [
-                Tab(text: 'Email Login',),
-                Tab(text: 'Phone Login'),
+                Tab(text: 'Phone Login'), // Changed position to first
+                Tab(text: 'Email Login'),
               ],
             ),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  ListView(
-                    children: [
-                      SizedBox(height: 16.0),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: _inputDecoration('Enter Email'),
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      SizedBox(height: 16.0),
-                      TextFormField(
-                        controller: _emailPasswordController,
-                        decoration: _inputDecoration('Enter Password').copyWith(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isEmailPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isEmailPasswordVisible = !_isEmailPasswordVisible;
-                              });
-                            },
-                          ),
-                        ),
-                        obscureText: !_isEmailPasswordVisible,
-                      ),
-                      SizedBox(height: 8.0),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ForgotPasswordPage()),
-                            );
-                          },
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 32.0),
-                      ElevatedButton(
-                        onPressed: _loginWithEmail,
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                          elevation: 5,
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Phone Login Tab
+                  // Phone Login Tab (now first)
                   ListView(
                     children: [
                       SizedBox(height: 16.0),
@@ -295,7 +286,73 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       ),
                       SizedBox(height: 32.0),
                       ElevatedButton(
-                        onPressed: (){},
+                        onPressed: (){_loginWithPhone();},
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white, backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                          elevation: 5,
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Email Login Tab (now second)
+                  ListView(
+                    children: [
+                      SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: _inputDecoration('Enter Email'),
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _emailPasswordController,
+                        decoration: _inputDecoration('Enter Password').copyWith(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isEmailPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isEmailPasswordVisible = !_isEmailPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: !_isEmailPasswordVisible,
+                      ),
+                      SizedBox(height: 8.0),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordPage()),
+                            );
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 32.0),
+                      ElevatedButton(
+                        onPressed: _loginWithEmail,
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white, backgroundColor: primaryColor,
                           shape: RoundedRectangleBorder(
@@ -331,7 +388,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             ),
           ],
         ),
-      ),
+    ),
     );
   }
 

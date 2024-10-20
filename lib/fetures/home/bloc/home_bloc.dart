@@ -1,8 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:delivery_app/repositories/book_data.dart';
-import '../../../repositories/electronics_data.dart';
-import '../../../repositories/food_data.dart';
-import '../../../repositories/pharmacy_data.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -59,22 +55,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     if (query.isEmpty) return [];
 
     switch (category) {
-      case 'Food':
-        return restaurants
-            .where((item) => (item['name'] ?? '').toString().toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      case 'Pharmacy':
-        return pharmacies
-            .where((item) => item.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      case 'Books':
-        return bookStores
-            .where((book) => book.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      case 'Electronics':
-        return electronicsStores
-            .where((item) => item.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+
       default:
         return [];
     }
