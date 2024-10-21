@@ -21,7 +21,7 @@ class _OrderViewState extends State<OrderView> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    _fetchOrders(); // Fetch the orders on page load
+    _fetchOrders();
   }
 
 
@@ -29,24 +29,23 @@ class _OrderViewState extends State<OrderView> with SingleTickerProviderStateMix
     const String url = 'https://hello-delivery.onrender.com/api/v1/order/my';
 
     try {
-      // Retrieve the access token from SharedPreferences
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('accessToken');
 
       if (accessToken == null) {
-        // Handle case where the token is missing
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No access token found. Please log in.')),
         );
         return;
       }
 
-      // Make the API request with the retrieved access token
       final response = await http.get(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken', // Use the token from SharedPreferences
+          'Authorization': 'Bearer $accessToken',
         },
       );
 
@@ -83,6 +82,8 @@ class _OrderViewState extends State<OrderView> with SingleTickerProviderStateMix
           backgroundColor: primaryColor,
           bottom: TabBar(
             controller: _tabController,
+            indicatorColor: Colors.black,
+            labelColor: primaryColor,
             tabs: [
               Tab(text: 'Ongoing'),
               Tab(text: 'All'),

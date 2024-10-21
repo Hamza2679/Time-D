@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:delivery_app/utils/colors.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // For token management
-import 'package:http/http.dart' as http; // For making HTTP requests
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../payment/payment_page.dart'; // For JSON encoding/decoding
+import '../payment/payment_page.dart';
 
 class OrderSummaryPage extends StatefulWidget {
   final List<Map<String, dynamic>> selectedProducts;
@@ -20,46 +20,64 @@ class OrderSummaryPage extends StatefulWidget {
 }
 
 class _OrderSummaryPageState extends State<OrderSummaryPage> {
-  String selectedAddressOption = 'auto';
+  String selectedAddressOption = 'auto'; // Default to auto
   TextEditingController manualAddressController = TextEditingController();
   TextEditingController streetController = TextEditingController();
-  final double defaultLatitude = 6.5244; // Default latitude
-  final double defaultLongitude = 3.3792; // Default longitude
+  double latitude = 0.0;
+  double longitude = 0.0;
 
-  // Filter out products where the quantity is greater than 0
-  List<Map<String, dynamic>> getFilteredProducts() {
-    List<Map<String, dynamic>> filteredProducts = [];
-    for (int i = 0; i < widget.selectedProducts.length; i++) {
-      if (widget.quantities[i] > 0) {
-        filteredProducts.add(widget.selectedProducts[i]);
-      }
+  @override
+  void initState() {
+    super.initState();
+    if (selectedAddressOption == '') {
+      _determinePosition(); // Automatically detect location when auto is selected
     }
-    return filteredProducts;
   }
 
-  // Get the filtered quantities corresponding to filtered products
-  List<int> getFilteredQuantities() {
-    List<int> filteredQuantities = [];
-    for (int i = 0; i < widget.quantities.length; i++) {
-      if (widget.quantities[i] > 0) {
-        filteredQuantities.add(widget.quantities[i]);
+  Future<void> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      print('Location services are disabled.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print('Location permissions are denied.');
+        return;
       }
     }
-    return filteredQuantities;
+
+    if (permission == LocationPermission.deniedForever) {
+      print('Location permissions are permanently denied.');
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      latitude = position.latitude;
+      longitude = position.longitude;
+    });
+
+    print('Current location: Lat: $latitude, Lon: $longitude');
   }
 
   Future<void> confirmOrder() async {
     try {
-      // Retrieve the access token from SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('accessToken');
 
-      // Ensure the token is available
       if (accessToken == null) {
         throw Exception('No access token found');
       }
 
-      // Prepare the products for the request
       List<Map<String, dynamic>> products = [];
       final filteredProducts = getFilteredProducts();
       final filteredQuantities = getFilteredQuantities();
@@ -70,14 +88,15 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         });
       }
 
-      // Create the request payload
+      double finalLatitude = selectedAddressOption == 'auto' ? latitude : 0.0;
+      double finalLongitude = selectedAddressOption == 'auto' ? longitude : 0.0;
+
       final Map<String, dynamic> requestBody = {
         'products': products,
-        'latitude': defaultLatitude,
-        'longitude': defaultLongitude,
+        'latitude': finalLatitude,
+        'longitude': finalLongitude,
       };
 
-      // Make the API request
       final response = await http.post(
         Uri.parse('https://hello-delivery.onrender.com/api/v1/order'),
         headers: {
@@ -87,41 +106,36 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         body: json.encode(requestBody),
       );
 
-      // Log response for debugging
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
-      // Initialize default values for deliveryFee and totalFee
       double deliveryFee = 0.0;
+      double total_product_price =0.0;
       double totalFee = 0.0;
-      String ordeId = "";
+      String orderId = "";
 
-      // Handle the response
       if (response.statusCode == 200 || response.statusCode == 201) {
         var orderResponse = json.decode(response.body);
 
-        // Check if response is an object or a list
         if (orderResponse is List && orderResponse.isNotEmpty) {
           deliveryFee = orderResponse[0]['totalDeliveryFee'] ?? 0.0;
           totalFee = orderResponse[0]['totalAmount'] ?? 0.0;
-          ordeId = orderResponse[0]['id']?? 0.0;
-        } else if (orderResponse is Map) {
-          deliveryFee = orderResponse['totalDeliveryFee'] ?? 0.0;
-          totalFee = orderResponse['totalAmount'] ?? 0.0;
-          ordeId = orderResponse['id'] ?? 0.0;
+          total_product_price = orderResponse[0]['totalProductPrice'] ?? 0.0;
+          orderId = orderResponse[0]['id']?? "";
         }
 
-        // Navigate to PaymentPage with the fees
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PaymentPage(
               deliveryFee: deliveryFee,
               totalFee: totalFee,
-              orderId: ordeId
+              orderId: orderId,
+              totalProductPrice: total_product_price,
             ),
           ),
         );
+
       } else {
         throw Exception('Failed to confirm order');
       }
@@ -129,7 +143,6 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
       print('Error confirming order: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -173,40 +186,36 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                     title: Text(product['name'] ?? ''),
                     subtitle: Text('Quantity: ${filteredQuantities[index]}'),
                     trailing: Text(
-                      '\$${(product['price'] ?? 0.0) * filteredQuantities[index]}',
+                      'price : \$${((product['price'] ?? 0.0) * filteredQuantities[index]).toStringAsFixed(2)}',
                     ),
                   );
                 },
               ),
-              SizedBox(height: 20),
-              // Delivery Address Section
-              Text(
-                'Select Delivery Address:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Row(
-                children: [
-                  Radio(
+              SizedBox(height: 10),
+              DropdownButton<String>(
+                value: selectedAddressOption.isEmpty ? '' : selectedAddressOption,
+                items: [
+                  DropdownMenuItem(
+                    value: '',
+                    child: Text('Select Delivery Address:'),
+                  ),
+                  DropdownMenuItem(
                     value: 'auto',
-                    groupValue: selectedAddressOption,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedAddressOption = value.toString();
-                      });
-                    },
+                    child: Text('Auto Detect'),
                   ),
-                  Text('Auto Detect'),
-                  Radio(
+                  DropdownMenuItem(
                     value: 'manual',
-                    groupValue: selectedAddressOption,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedAddressOption = value.toString();
-                      });
-                    },
+                    child: Text('Enter Manually'),
                   ),
-                  Text('Enter Manually'),
                 ],
+                onChanged: (value) {
+                  setState(() {
+                    selectedAddressOption = value!;
+                    if (selectedAddressOption == 'auto') {
+                      _determinePosition(); // Call method to auto-detect position
+                    }
+                  });
+                },
               ),
               if (selectedAddressOption == 'manual') ...[
                 TextField(
@@ -222,10 +231,10 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                   ),
                 ),
               ],
+
               SizedBox(height: 20),
-              // Confirm Order Button
               ElevatedButton(
-                onPressed: confirmOrder, // Call the confirm order function
+                onPressed: confirmOrder,
                 child: Text(
                   'Confirm Order',
                   style: TextStyle(color: primaryTextColor),
@@ -240,5 +249,25 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
         ),
       ),
     );
+  }
+
+  List<Map<String, dynamic>> getFilteredProducts() {
+    List<Map<String, dynamic>> filteredProducts = [];
+    for (int i = 0; i < widget.selectedProducts.length; i++) {
+      if (widget.quantities[i] > 0) {
+        filteredProducts.add(widget.selectedProducts[i]);
+      }
+    }
+    return filteredProducts;
+  }
+
+  List<int> getFilteredQuantities() {
+    List<int> filteredQuantities = [];
+    for (int i = 0; i < widget.quantities.length; i++) {
+      if (widget.quantities[i] > 0) {
+        filteredQuantities.add(widget.quantities[i]);
+      }
+    }
+    return filteredQuantities;
   }
 }

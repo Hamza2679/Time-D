@@ -55,6 +55,7 @@ dependencies:
   url_launcher: ^6.0.9
   google_maps_flutter: ^2.1.5
   video_player: ^2.4.6
+  geolocator: ^13.0.1
 
 
 dev_dependencies:

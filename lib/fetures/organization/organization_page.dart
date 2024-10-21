@@ -95,7 +95,7 @@ class OrganizationPage extends StatelessWidget {
                                 Icon(Icons.star, color: Colors.amber, size: 16),
                                 SizedBox(width: 4),
                                 Text(
-                                  organization['rating']?.toStringAsFixed(2) ?? 'N/A', // Handle null rating
+                                  organization['rating']?.toStringAsFixed(2) ?? 'N/A',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
