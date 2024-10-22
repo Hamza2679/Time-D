@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/colors.dart';
+import '../common/finish_page.dart';
 
 class PaymentPage extends StatefulWidget {
   final double deliveryFee;
@@ -25,6 +26,8 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   String? _selectedPaymentMethod;
+  bool isProcessingPayment = false;
+
 
   Future<void> _handlePayNow() async {
     const String url = 'https://hello-delivery.onrender.com/api/v1/payment';
@@ -109,20 +112,36 @@ class _PaymentPageState extends State<PaymentPage> {
               },
             ),
             SizedBox(height: 20),
+
             ElevatedButton(
-              onPressed: () {
-                if (_selectedPaymentMethod == 'now') {
-                  _handlePayNow();
-                } else if (_selectedPaymentMethod == 'later') {
-                  _navigateToFinishPage();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Please select a payment method'),
-                  ));
+              onPressed: () async {
+                if (_selectedPaymentMethod == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Please select a payment method')),
+                  );
+                  return;
                 }
+
+                setState(() {
+                  isProcessingPayment = true;
+                });
+
+                if (_selectedPaymentMethod == 'now') {
+                  await _handlePayNow();
+                } else if (_selectedPaymentMethod == 'later') {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>FinishPage()));
+                }
+
+                setState(() {
+                  isProcessingPayment = false;
+                });
               },
-              child: Text(
-                'Confirm Payment',
+              child: isProcessingPayment
+                  ? CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(primaryTextColor),
+              )
+                  : Text(
+                'Confirm',
                 style: TextStyle(color: primaryTextColor),
               ),
               style: ElevatedButton.styleFrom(

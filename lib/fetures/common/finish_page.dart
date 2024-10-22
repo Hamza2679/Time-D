@@ -11,7 +11,7 @@ class FinishPage extends StatelessWidget {
         preferredSize: Size.fromHeight(50.0),
     child: AppBar(
     backgroundColor: primaryColor,
-    title: Text("Hello Delivery", style: TextStyle(color: primaryTextColor)),
+    title: Text("Time Delivery", style: TextStyle(color: primaryTextColor)),
     ),
         ),
       body: Center(
@@ -19,7 +19,7 @@ class FinishPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              'assets/sucsess.png', // Replace with your asset image
+              'assets/sucsess.png',
               height: 200,
             ),
             SizedBox(height: 20),
@@ -32,7 +32,7 @@ class FinishPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'You successfully created an order,\nenjoy our service!',
+              'You successfully created an order,\n We Will call you ASASP \nenjoy our service!',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,

@@ -42,19 +42,18 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _pageController = PageController();
 
-    // Initialize the video controller
     _videoController = VideoPlayerController.asset('assets/fsvideo.mp4')
       ..initialize().then((_) {
-        setState(() {}); // Update UI once the video is initialized
+        setState(() {});
       });
     _videoController.setLooping(true);
-    _videoController.play(); // Auto-play the video
+    _videoController.play();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _videoController.dispose(); // Dispose of the video controller
+    _videoController.dispose();
     super.dispose();
   }
 
@@ -141,7 +140,7 @@ class _MainPageState extends State<MainPage> {
                                                 ),
                                                 child: Center(
                                                   child: Text(
-                                                    '1', // Example for 1 unread notification
+                                                    '3',
                                                     style: TextStyle(
                                                       color: primaryTextColor,
                                                       fontSize: 10,
@@ -183,7 +182,6 @@ class _MainPageState extends State<MainPage> {
                                           ),
                                         );
                                       } else {
-                                        // Display images for index 0, 1, 2
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                           child: Card(

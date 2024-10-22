@@ -120,7 +120,6 @@ class _OrderViewState extends State<OrderView> with SingleTickerProviderStateMix
           subtitle: Text('Status: ${order['status']}'),
           trailing: Text('Total: \$${order['total']}'),
           onTap: () {
-            // Handle order tap, e.g., navigate to order details
           },
         );
       },

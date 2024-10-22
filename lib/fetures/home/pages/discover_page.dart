@@ -80,24 +80,7 @@ class DiscoverPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryCard(String name, IconData icon) {
-    return Container(
-      width: 80,
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.orangeAccent,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 30, color: Colors.white),
-          SizedBox(height: 10),
-          Text(name, style: TextStyle(color: Colors.white)),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildStoreCarousel() {
     return Container(

@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   String _selectedCountryCode = '+251';
   String _countryFlag = '🇪🇹';
   final String baseUrl = 'https://hello-delivery.onrender.com/api/v1';
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -196,7 +197,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               labelColor: primaryColor,
               unselectedLabelColor: greyColor,
               tabs: [
-                Tab(text: 'Phone Login'), // Changed position to first
+                Tab(text: 'Phone Login'),
                 Tab(text: 'Email Login'),
               ],
             ),
@@ -204,7 +205,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  // Phone Login Tab (now first)
                   ListView(
                     children: [
                       SizedBox(height: 16.0),
@@ -285,22 +285,37 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                       ),
                       SizedBox(height: 32.0),
-                      ElevatedButton(
-                        onPressed: (){_loginWithPhone();},
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                          elevation: 5,
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
+
+                ElevatedButton(
+                onPressed: () async {
+                  setState(() {
+                  isLoading = true;
+                  });
+                  await _loginWithPhone();
+                  setState(() {
+                  isLoading = false;
+                  });
+                  },
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          elevation: 5,
+        ),
+        child: isLoading
+            ? CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        )
+            : Text(
+          'Login',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+
+      ],
                   ),
                   // Email Login Tab (now second)
                   ListView(
@@ -351,22 +366,38 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                       ),
                       SizedBox(height: 32.0),
-                      ElevatedButton(
-                        onPressed: _loginWithEmail,
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                          elevation: 5,
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
+
+
+          ElevatedButton(
+          onPressed: () async {
+    setState(() {
+    isLoading = true;
+    });
+    await _loginWithEmail();
+    setState(() {
+    isLoading = false;
+    });
+    },
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        elevation: 5,
+      ),
+      child: isLoading
+          ? CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      )
+          : Text(
+        'Login',
+        style: TextStyle(fontSize: 16),
+      ),
+    ),
+
+    ],
                   ),
                 ],
               ),

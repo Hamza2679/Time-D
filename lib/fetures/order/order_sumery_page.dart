@@ -20,17 +20,18 @@ class OrderSummaryPage extends StatefulWidget {
 }
 
 class _OrderSummaryPageState extends State<OrderSummaryPage> {
-  String selectedAddressOption = 'auto'; // Default to auto
+  String selectedAddressOption = '';
   TextEditingController manualAddressController = TextEditingController();
   TextEditingController streetController = TextEditingController();
   double latitude = 0.0;
   double longitude = 0.0;
+  bool isConfirmingOrder = false;
 
   @override
   void initState() {
     super.initState();
     if (selectedAddressOption == '') {
-      _determinePosition(); // Automatically detect location when auto is selected
+      _determinePosition();
     }
   }
 
@@ -212,7 +213,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                   setState(() {
                     selectedAddressOption = value!;
                     if (selectedAddressOption == 'auto') {
-                      _determinePosition(); // Call method to auto-detect position
+                      _determinePosition();
                     }
                   });
                 },
@@ -234,8 +235,20 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
 
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: confirmOrder,
-                child: Text(
+                onPressed: () async {
+                  setState(() {
+                    isConfirmingOrder = true;
+                  });
+                  await confirmOrder();
+                  setState(() {
+                    isConfirmingOrder = false;
+                  });
+                },
+                child: isConfirmingOrder
+                    ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(primaryTextColor),
+                )
+                    : Text(
                   'Confirm Order',
                   style: TextStyle(color: primaryTextColor),
                 ),

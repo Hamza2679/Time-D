@@ -18,6 +18,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String? phone;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool isRegistering = false;
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -247,17 +248,31 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
               ),
               SizedBox(height: 16.0,),
+
               ElevatedButton(
-                onPressed: _register,
+                onPressed: () async {
+                  setState(() {
+                    isRegistering = true;
+                  });
+                  await _register();
+                  setState(() {
+                    isRegistering = false;
+                  });
+                },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  backgroundColor: primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                   elevation: 5,
                 ),
-                child: Text(
+                child: isRegistering
+                    ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+                    : Text(
                   'Sign Up',
                   style: TextStyle(fontSize: 16),
                 ),

@@ -21,7 +21,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   _ForgotPasswordStep _currentStep = _ForgotPasswordStep.enterEmail;
-
+  bool isSendingOtp = false;
+  bool isVerifyingOtp = false;
+  bool isResettingPassword = false;
   Future<void> _sendOtp() async {
     final email = _emailController.text;
     if (email.isEmpty) {
@@ -47,7 +49,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           _currentStep = _ForgotPasswordStep.enterOTP;
         });
 
-        // Show a message that OTP is sent
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('OTP has been sent to $email')),
         );
@@ -60,7 +61,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     }
   }
 
-  void _verifyOtp() {
+  Future<void> _verifyOtp() async {
     final otp = _otpController.text;
     if (otp.isEmpty) {
       _showMessage('Please enter the OTP.',redColor);
@@ -109,7 +110,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       );
 
       if (response.statusCode == 201) {
-        // Password reset successfully
         _showMessage('Password has been reset successfully', greenColor);
 
         Navigator.pop(context);
@@ -192,22 +192,38 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               keyboardType: TextInputType.emailAddress,
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _sendOtp,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                elevation: 5,
-              ),
-              child: Text(
-                'Send OTP',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
+
+
+    ElevatedButton(
+    onPressed: () async {
+    setState(() {
+    isSendingOtp = true;
+    });
+    await _sendOtp();
+    setState(() {
+    isSendingOtp = false;
+    });
+    },
+    style: ElevatedButton.styleFrom(
+    foregroundColor: Colors.white,
+    backgroundColor: primaryColor,
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(20),
+    ),
+    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+    elevation: 5,
+    ),
+    child: isSendingOtp
+    ? CircularProgressIndicator(
+    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+    )
+        : Text(
+    'Send OTP',
+    style: TextStyle(fontSize: 16),
+    ),
+    ),
+
+    ],
         );
 
       case _ForgotPasswordStep.enterOTP:
@@ -228,16 +244,29 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _verifyOtp,
+              onPressed: () async {
+                setState(() {
+                  isVerifyingOtp = true;
+                });
+                await _verifyOtp();
+                setState(() {
+                  isVerifyingOtp = false;
+                });
+              },
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                backgroundColor: primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 elevation: 5,
               ),
-              child: Text(
+              child: isVerifyingOtp
+                  ? CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              )
+                  : Text(
                 'Verify OTP',
                 style: TextStyle(fontSize: 16),
               ),
@@ -271,16 +300,29 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _resetPassword,
+              onPressed: () async {
+                setState(() {
+                  isResettingPassword = true;
+                });
+                await _resetPassword();
+                setState(() {
+                  isResettingPassword = false;
+                });
+              },
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                backgroundColor: primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 elevation: 5,
               ),
-              child: Text(
+              child: isResettingPassword
+                  ? CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              )
+                  : Text(
                 'Reset Password',
                 style: TextStyle(fontSize: 16),
               ),

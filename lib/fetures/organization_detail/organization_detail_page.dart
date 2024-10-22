@@ -5,7 +5,8 @@ import '../order/order_sumery_page.dart';
 
 class OrganizationDetailPage extends StatefulWidget {
   final String organizationName;
-  final List<Map<String, dynamic>>? products; // Handle null for products
+  final List<Map<String, dynamic>>? products;
+
 
   OrganizationDetailPage({required this.organizationName, required this.products});
 
@@ -15,11 +16,11 @@ class OrganizationDetailPage extends StatefulWidget {
 
 class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
   List<int> quantities = [];
+  bool isNavigating = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize quantities for each product with 0
     quantities = List<int>.filled(widget.products?.length ?? 0, 0);
   }
 
@@ -34,7 +35,7 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final productList = widget.products ?? []; // Default to an empty list if null
+    final productList = widget.products ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +74,7 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: Image.network(
-                              product['image'] ?? '', // Handle null image
+                              product['image'] ?? '',
                               width: 100,
                               height: 100,
                               fit: BoxFit.cover,
@@ -87,15 +88,14 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
                               },
                             ),
                           ),
-                          SizedBox(width: 10), // Space between image and text
+                          SizedBox(width: 10),
 
-                          // Product details and quantity controls
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  product['name'] ?? 'Unknown Product', // Handle null name
+                                  product['name'] ?? 'Unknown Product',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -106,7 +106,7 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  '\$${(product['price'] ?? 0.0).toStringAsFixed(2)}', // Format to two decimal places
+                                  '\$${(product['price'] ?? 0.0).toStringAsFixed(2)}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.green[700],
@@ -171,9 +171,11 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      // Navigate to Order Summary Page
-                      Navigator.push(
+                    onPressed: () async {
+                      setState(() {
+                        isNavigating = true;
+                      });
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => OrderSummaryPage(
@@ -182,8 +184,19 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
                           ),
                         ),
                       );
+
+                      setState(() {
+                        isNavigating = false;
+                      });
                     },
-                    child: Text('Order Now', style: TextStyle(color: primaryColor),),
+                    child: isNavigating
+                        ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                    )
+                        : Text(
+                      'Order Now',
+                      style: TextStyle(color: primaryColor),
+                    ),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     ),

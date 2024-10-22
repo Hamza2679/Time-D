@@ -18,7 +18,7 @@ class SplashScreen2 extends StatelessWidget {
       },
       child: Scaffold(
         body: SplashScreen(
-          imagePath: 'assets/splash1.jpg',
+          imagePath: 'assets/splash1.png',
           text: 'Easily find your favorite products. Order from anywhere.',
           onNext: () {
             BlocProvider.of<SplashBloc>(context).add(NextScreenEvent(SplashScreen3()));
