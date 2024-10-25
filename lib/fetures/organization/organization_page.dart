@@ -1,18 +1,16 @@
 import 'package:delivery_app/utils/colors.dart';
 import 'package:flutter/material.dart';
-
 import '../organization_detail/organization_detail_page.dart';
 
-
-
 class OrganizationPage extends StatelessWidget {
-  final List<Map<String, dynamic>>? organizations; // Allow null here
+  final List<Map<String, dynamic>>? organizations;
+  bool _isNavigating = false; // Flag to track navigation state
 
   OrganizationPage({required this.organizations});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> organizationList = organizations ?? []; // Default to empty list if null
+    final List<Map<String, dynamic>> organizationList = organizations ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -41,15 +39,20 @@ class OrganizationPage extends StatelessWidget {
 
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OrganizationDetailPage(
-                      organizationName: organization['name'],
-                      products: organization['products'] ?? [], // Default to empty list if null
+                if (!_isNavigating) { // Check if navigation is already in progress
+                  _isNavigating = true; // Set the flag to true
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrganizationDetailPage(
+                        organizationName: organization['name'],
+                        products: organization['products'] ?? [],
+                      ),
                     ),
-                  ),
-                );
+                  ).then((_) {
+                    _isNavigating = false; // Reset the flag when navigation is complete
+                  });
+                }
               },
               child: Card(
                 shape: RoundedRectangleBorder(

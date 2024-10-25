@@ -4,6 +4,8 @@ import 'package:delivery_app/utils/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../utils/colors.dart';
+import '../../utils/colors.dart';
 import '../payment/payment_page.dart';
 
 class OrderSummaryPage extends StatefulWidget {
@@ -39,26 +41,29 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     bool serviceEnabled;
     LocationPermission permission;
 
+    // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      print('Location services are disabled.');
+      _showServiceNotAvailableDialog();
       return;
     }
 
+    // Check and request permission
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        print('Location permissions are denied.');
+        _showServiceNotAvailableDialog();
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      print('Location permissions are permanently denied.');
+      _showServiceNotAvailableDialog();
       return;
     }
 
+    // If permission is granted, get the current position
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
@@ -68,6 +73,24 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     });
 
     print('Current location: Lat: $latitude, Lon: $longitude');
+  }
+
+  void _showServiceNotAvailableDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Service Not Available'),
+        content: Text('Location services are required to proceed with the order.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> confirmOrder() async {
@@ -111,18 +134,28 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
       print('Response body: ${response.body}');
 
       double deliveryFee = 0.0;
-      double total_product_price =0.0;
+      double total_product_price = 0.0;
       double totalFee = 0.0;
       String orderId = "";
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var orderResponse = json.decode(response.body);
+        deliveryFee = orderResponse['totalDeliveryFee'] ?? 0.0;
+        totalFee = orderResponse['totalAmount'] ?? 0.0;
+        total_product_price = orderResponse['totalProductPrice'] ?? 0.0;
+        orderId = orderResponse['id'] ?? "";
 
-        if (orderResponse is List && orderResponse.isNotEmpty) {
-          deliveryFee = orderResponse[0]['totalDeliveryFee'] ?? 0.0;
-          totalFee = orderResponse[0]['totalAmount'] ?? 0.0;
-          total_product_price = orderResponse[0]['totalProductPrice'] ?? 0.0;
-          orderId = orderResponse[0]['id']?? "";
+        if (deliveryFee > 500) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Service not available in your location'),
+              backgroundColor: Colors.red,
+            ),
+          );
+
+
+          await Future.delayed(Duration(seconds: 5));
+          return;
         }
 
         Navigator.push(
@@ -136,14 +169,17 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
             ),
           ),
         );
-
       } else {
         throw Exception('Failed to confirm order');
       }
     } catch (e) {
       print('Error confirming order: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

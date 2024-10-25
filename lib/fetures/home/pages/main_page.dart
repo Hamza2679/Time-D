@@ -9,7 +9,10 @@ import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
 import '../../order/order_view.dart';
 import '../../profile/pages/profile_view.dart';
+import '../widgets/category_widget.dart';
 import '../widgets/main_widget.dart';
+
+
 
 class MainPage extends StatefulWidget {
   @override
@@ -159,7 +162,7 @@ class _MainPageState extends State<MainPage> {
                                   height: 150,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: adImages.length ,
+                                    itemCount: adImages.length,
                                     itemBuilder: (context, index) {
                                       if (index == 0) {
                                         return Padding(
@@ -226,7 +229,7 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                 ),
                                 SizedBox(height: 7),
-                                buildCategories(context, state.currentCategory),
+                                CategoryWidget(currentCategory: state.currentCategory),
                               ],
                             ),
                           ),

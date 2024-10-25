@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/colors.dart';
 import '../common/finish_page.dart';
@@ -28,10 +29,9 @@ class _PaymentPageState extends State<PaymentPage> {
   String? _selectedPaymentMethod;
   bool isProcessingPayment = false;
 
-
   Future<void> _handlePayNow() async {
     const String url = 'https://hello-delivery.onrender.com/api/v1/payment';
-
+    print('Order id: \$${widget.orderId}');
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString('accessToken');
@@ -52,26 +52,38 @@ class _PaymentPageState extends State<PaymentPage> {
         body: json.encode({
           "orderId": widget.orderId,
         }),
+
       );
 
+      print('Response body: ${response.body}');
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Payment successful!'),
-        ));
+        var responseBody = json.decode(response.body);
+        print('Response JSON: $responseBody');
+
+        if (responseBody['status'] == 'success' && responseBody['data'] != null && responseBody['data']['checkout_url'] != null) {
+          String checkoutUrl = responseBody['data']['checkout_url'];
+          Uri uri = Uri.parse(checkoutUrl);
+          if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Could not launch the payment URL.'),
+            ));
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Payment initiation failed: Missing checkout URL.'),
+          ));
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Payment failed! Please try again.'),
+          content: Text('Payment request failed with status code: ${response.statusCode}'),
         ));
       }
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('An error occurred: $e'),
       ));
     }
-  }
-
-  void _navigateToFinishPage() {
-    Navigator.pushNamed(context, '/finish');
   }
 
   @override
@@ -86,6 +98,7 @@ class _PaymentPageState extends State<PaymentPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Text('Product price: \$${widget.totalProductPrice.toStringAsFixed(2)}'),
             Text('Delivery Fee: \$${widget.deliveryFee.toStringAsFixed(2)}'),
             Text('Total Fee: \$${widget.totalFee.toStringAsFixed(2)}'),
@@ -151,6 +164,57 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+
+
+class PaymentWebView extends StatefulWidget {
+  final String url;
+
+  PaymentWebView({required this.url});
+
+  @override
+  _PaymentWebViewState createState() => _PaymentWebViewState();
+}
+
+class _PaymentWebViewState extends State<PaymentWebView> {
+  late InAppWebViewController _webViewController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Payment Gateway'),
+        backgroundColor: Colors.blue, // Customize the color as needed
+      ),
+      body: InAppWebView(
+        initialUrlRequest: URLRequest(
+          url: WebUri(widget.url), // Use WebUri directly with string URL
+        ),
+        initialOptions: InAppWebViewGroupOptions(
+          crossPlatform: InAppWebViewOptions(
+            javaScriptEnabled: true, // Ensure JavaScript is enabled for payment pages
+          ),
+        ),
+        onWebViewCreated: (controller) {
+          _webViewController = controller;
+        },
+        onLoadStart: (controller, url) {
+          print('Page started loading: $url');
+        },
+        onLoadStop: (controller, url) async {
+          print('Page finished loading: $url');
+        },
+        onLoadError: (controller, url, code, message) {
+          print('Error loading page: $message');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error loading page: $message')),
+          );
+        },
       ),
     );
   }
