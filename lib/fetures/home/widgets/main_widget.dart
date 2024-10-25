@@ -117,6 +117,7 @@ Future<List<Map<String, dynamic>>> fetchCategories() async {
 }
 
 
+bool _isNavigating = false; // Add this flag outside the function or within a StatefulWidget
 
 Widget buildCategories(BuildContext context, String currentCategory) {
   return FutureBuilder<List<Map<String, dynamic>>>(
@@ -137,10 +138,13 @@ Widget buildCategories(BuildContext context, String currentCategory) {
             itemBuilder: (context, index) {
               final category = categories[index];
               bool isSelected = currentCategory == category['text'];
+
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
                 child: GestureDetector(
-                    onTap: () async {
+                  onTap: () async {
+                    if (!_isNavigating) { // Check if navigation is already in progress
+                      _isNavigating = true; // Set the flag to true
                       String categoryId = category['id'];
 
                       try {
@@ -150,15 +154,16 @@ Widget buildCategories(BuildContext context, String currentCategory) {
                           MaterialPageRoute(
                             builder: (context) => OrganizationPage(organizations: organizations),
                           ),
-                        );
+                        ).then((_) {
+                          _isNavigating = false; // Reset the flag when navigation is complete
+                        });
                       } catch (error) {
                         print('Error fetching organizations: $error');
+                        _isNavigating = false; // Reset flag on error
                       }
-                    },
-
-
-
-                child: Container(
+                    }
+                  },
+                  child: Container(
                     width: 100,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
@@ -196,7 +201,6 @@ Widget buildCategories(BuildContext context, String currentCategory) {
                             fit: BoxFit.cover,
                           ),
                         ),
-
                         SizedBox(height: 2),
                         Text(
                           category['text'],
@@ -219,6 +223,7 @@ Widget buildCategories(BuildContext context, String currentCategory) {
     },
   );
 }
+
 
 
 Widget buildSearchResults(String category, List<dynamic> items) {

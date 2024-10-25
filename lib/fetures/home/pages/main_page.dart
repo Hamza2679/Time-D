@@ -9,7 +9,6 @@ import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
 import '../../order/order_view.dart';
 import '../../profile/pages/profile_view.dart';
-import '../widgets/category_widget.dart';
 import '../widgets/main_widget.dart';
 
 
@@ -229,7 +228,7 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                 ),
                                 SizedBox(height: 7),
-                                CategoryWidget(currentCategory: state.currentCategory),
+                                buildCategories(context, state.currentCategory),
                               ],
                             ),
                           ),
