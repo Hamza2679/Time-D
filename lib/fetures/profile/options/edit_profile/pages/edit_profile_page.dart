@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class EditProfileView extends StatefulWidget {
   @override
@@ -14,7 +13,6 @@ class _EditProfileViewState extends State<EditProfileView> {
   final _fullNameController = TextEditingController();
   final _addressController = TextEditingController();
   File? _profileImage;
-  LatLng? _selectedLocation;
   SharedPreferences? _prefs;
 
   @override
@@ -58,11 +56,11 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   Future<void> _fetchCurrentLocation() async {
-    LatLng simulatedLocation = LatLng(9.025, 38.7469);
-    setState(() {
-      _selectedLocation = simulatedLocation;
-      _addressController.text = 'Current Address: (${simulatedLocation.latitude}, ${simulatedLocation.longitude})';
-    });
+    // LatLng simulatedLocation = LatLng(9.025, 38.7469);
+    // setState(() {
+    //   _selectedLocation = simulatedLocation;
+    //   _addressController.text = 'Current Address: (${simulatedLocation.latitude}, ${simulatedLocation.longitude})';
+    // });
   }
 
   Future<void> saveProfile() async {

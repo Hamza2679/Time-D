@@ -23,6 +23,7 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   String fullName = 'Update your name';
   String phoneNumber = '';
+  String email = 'add email'; // Define email here
   ImageProvider? profileImage;
 
   @override
@@ -37,17 +38,16 @@ class _ProfileViewState extends State<ProfileView> {
     final firstName = prefs.getString('firstName') ?? 'Update';
     final lastName = prefs.getString('lastName') ?? 'your name';
     final updatedPhone = prefs.getString('phone') ?? '';
-
     final profileImageUrl = prefs.getString('profileImageUrl');
+    final updatedEmail = prefs.getString('email') ?? 'add email'; // Retrieve email
 
     setState(() {
       fullName = '$firstName $lastName';
       phoneNumber = updatedPhone;
-      if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
-        profileImage = NetworkImage(profileImageUrl);
-      } else {
-        profileImage = AssetImage('assets/profile_picture.jpg');
-      }
+      email = updatedEmail; // Update email
+      profileImage = profileImageUrl != null && profileImageUrl.isNotEmpty
+          ? NetworkImage(profileImageUrl)
+          : AssetImage('assets/profile_picture.jpg');
     });
   }
 
@@ -84,6 +84,15 @@ class _ProfileViewState extends State<ProfileView> {
                         fullName,
                         style: TextStyle(
                           fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        email,
+                        style: TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: primaryColor,
                         ),

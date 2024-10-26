@@ -34,26 +34,16 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_bloc: ^8.0.0
   http: ^0.13.3
-  intl_phone_field: ^3.0.1
-  flutter_svg: ^0.22.0
   equatable: ^2.0.3
-  firebase_core: ^3.2.0
-  firebase_auth: ^5.1.2
-  provider: ^6.1.2
   shared_preferences: ^2.0.7
   country_picker: ^2.0.26
-  flutter_secure_storage: ^9.2.2
   get: ^4.6.1
   jwt_decode: ^0.3.1
   image_picker: ^0.8.5+3
   permission_handler: ^10.2.0
-  flutter_map: ^4.0.0
-  latlong2: ^0.8.0
   flutter_form_builder: ^9.3.0
   contacts_service: ^0.6.3
-  share_plus: ^10.0.0
   url_launcher: ^6.0.9
-  google_maps_flutter: ^2.1.5
   video_player: ^2.4.6
   geolocator: ^13.0.1
   flutter_inappwebview: ^6.0.0
@@ -84,71 +74,13 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/offer1.jpg
-    - assets/offer2.jpg
-    - assets/offer3.jpg
-    - assets/offer4.jpg
-    - assets/restaurant1.jpg
-    - assets/restaurant2.jpg
-    - assets/restaurant3.jpg
-    - assets/restaurant4.jpg
+
     - assets/splash.png
     - assets/splash1.png
     - assets/splash2.png
     - assets/profile_picture.jpg
     - assets/appicon.jpg
-    - assets/burger.jpg
-    - assets/burger2.jpg
-    - assets/checolat.jpg
-    - assets/fruit.jpg
-    - assets/pizza.jpg
-    - assets/shawarma.jpg
-    - assets/special.jpg
-    - assets/strobery.jpg
-    - assets/sushi.jpg
-    - assets/electronics.png
-    - assets/food.jpg
-    - assets/gift.jpg
-    - assets/pharmacy.jpg
-    - assets/sparepart.jpg
-    - assets/stationary.jpg
-    - assets/books.jpg
     - assets/sucsess.png
-    - assets/Screenshot.png
-    - assets/camera.jpg
-    - assets/drone.jpg
-    - assets/eirbuds.jpg
-    - assets/Estore1.jpg
-    - assets/Estore2.jpg
-    - assets/Estore3.jpg
-    - assets/Estore4.jpg
-    - assets/Estore5.jpg
-    - assets/Estore6.jpg
-    - assets/headset.jpg
-    - assets/laptop.jpg
-    - assets/phone.jpg
-    - assets/smart_watch.jpg
-    - assets/speaker.jpg
-    - assets/tablet.jpg
-    - assets/tv.jpg
-    - assets/antibiotic.jpg
-    - assets/colget.jpg
-    - assets/diclo.jpg
-    - assets/herbaltooth.jpg
-    - assets/panadol.jpg
-    - assets/paracetamol.jpg
-    - assets/Pstore1.jpg
-    - assets/Pstore2.jpg
-    - assets/Pstore3.jpg
-    - assets/Pstore4.jpg
-    - assets/Pstore5.jpg
-    - assets/Pstore6.jpg
-    - assets/signal.jpg
-    - assets/Asprine.jpg
-    - assets/shape.png
-    - assets/ScreenShot2.png
-    - assets/restaurant5.jpg
-    - assets/restaurant6.jpg
     - assets/All_category.png
     - assets/fsvideo.mp4
     - assets/ad1.png
