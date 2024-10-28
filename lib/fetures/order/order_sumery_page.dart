@@ -33,7 +33,6 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
   void initState() {
     super.initState();
     if (selectedAddressOption == '') {
-      _determinePosition();
     }
   }
 
